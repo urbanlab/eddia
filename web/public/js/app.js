@@ -142,20 +142,12 @@ var twizzleLock = {},
 		console.log('>> ZOOM');
 		console.log('Focus from [', focus0.data.name, '] to [', focus.data.name,']');
 		console.log('Item focused:', d.data.name);
-	//	console.log('['+view[0]+','+view[1]+','+view[2]+']\r\n['+focus.x+','+focus.y+','+(focus.r * 2 + margin)+']');
-/*
 
-		var transition = d3.transition()
-			 .duration(200)
-			 .tween("zoom", function(d) {
-				 var i = d3.interpolateZoom(view, [focus.x, focus.y, focus.r * 2 + margin]);
-				 return function(t) { zoomTo(i(t)); };
-			 });
-*/
+		console.log(focus0.r, focus.r);
+
 		var k = diameter / (focus.r * 2 + margin);
 
 		g.selectAll('circle')
-			.interrupt()
 			.transition()
 			.duration(600)
 			.attr("r", function(d) { return d.r * k; })
