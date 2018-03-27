@@ -26,13 +26,23 @@ app.set('port', port);
  */
 
 var io = require('socket.io')(http);
+var manager_id = 1;
+
+class Manager {
+	constructor(socket) {
+		this.socket = socket;
+		this.id = manager_id.toString();
+		manager_id++;
+		console.log(this.id);
+	}
+
+}
 
 io.on('connection', function(socket) {
-	socket.emit('yo', { 
-		msg: "Salut"
-	});
+	var manager = new Manager(socket);
+	console.log("mana", manager.id);
+	socket.emit('get manager', {'id': 'lala'});
 });
-
 /**
  * Listen on provided port, on all network interfaces.
  */
