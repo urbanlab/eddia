@@ -1,19 +1,60 @@
 
+var DATA;
+// Si tu veux utiliser les DATA en dur comme ca
+// Decommente ca
+/*
+DATA = {
+ "name": "TOPIC",
+ "children": [
+	 {
+		 "name": "TOPIC 2",
+		 "children": [
+			{"name": "3", "size": 5000},
+			{"name": "4", "size": 3938}
+		 ]
+	 },
+	 {"name": "1", "size": 3938},
+	 {"name": "2", "size": 3938},
+ ]
+};
+*/
+
 window.onload = function () {
 
 	var url_array = document.location.pathname.split('/');
 	var room = url_array[1];
+	var socket;
+	var once = 1;
 
 	if (room === "")
-		var socket = io();
+		socket = io();
 	else
-		var socket = io("/" + room);
+		socket = io("/" + room);
 
 	socket.on("get id", function(data) {
 		console.log(data.id);
-
 	});
 
+	// Commente ca
+	socket.on("update data", function(data) {
+		console.log("UPDATEDATA");
+		DATA = data;
+	});
+
+	// Et ca
+	socket.emit("get data");
+
+	// Et ca
+	socket.on("get data", function(data) {
+		DATA = data;
+		start();
+	});
+
+	// Decommente ca
+	// start();
+}
+
+function start() {
 	var svg = d3.select("svg"),
 	    margin = 20,
 	    diameter = +svg.attr("width"),
@@ -27,28 +68,12 @@ window.onload = function () {
 	var pack = d3.pack()
 	    .size([diameter - margin, diameter - margin])
 	    .padding(2);
-var twizzleLock = {},
-    plonkLock = {};
+
+	var twizzleLock = {}, plonkLock = {};
 /*
 	d3.json("nodes.json", function(error, root) {
 	  if (error) throw error;
 */
-
-	var DATA = {
-	 "name": "TOPIC",
-	 "children": [
-		 {
-			 "name": "TOPIC 2",
-			 "children": [
-				{"name": "3", "size": 5000},
-				{"name": "4", "size": 3938}
-			 ]
-		 },
-		 {"name": "1", "size": 3938},
-		 {"name": "2", "size": 3938},
-	 ]
-	};
-
 	var firstRun = true;
 	var view, focus;
 
@@ -56,23 +81,23 @@ var twizzleLock = {},
 
 		console.log('>> UPDATE');
 
-	  root = d3.hierarchy(DATA)
-	      .sum(function(d) { return d.size; })
-	      .sort(function(a, b) { return b.value - a.value; });
+		root = d3.hierarchy(DATA)
+			 .sum(function(d) { return d.size; })
+			 .sort(function(a, b) { return b.value - a.value; });
 
 		if (firstRun == true) {
 	 		focus = root;
 		}
 
-	  var nodes = pack(root).descendants();
+	  	var nodes = pack(root).descendants();
 
-	  var circle = g.selectAll("circle")
-	    .data(nodes)
-			.enter().append("circle")
-	      .attr("class", function(d) { return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root"; })
-				.attr('id', function(d) { return d.data.name; })
-				.style("fill", function(d) { return d.children ? color(d.depth) : null; })
-	      .on("click", function(d) { if (focus !== d) zoom(d), d3.event.stopPropagation(); });
+	  	var circle = g.selectAll("circle")
+			      .data(nodes)
+			      .enter().append("circle")
+			      .attr("class", function(d) { return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root"; })
+			      .attr('id', function(d) { return d.data.name; })
+			      .style("fill", function(d) { return d.children ? color(d.depth) : null; })
+			      .on("click", function(d) { if (focus !== d) zoom(d), d3.event.stopPropagation(); });
 				/*
 				.attr('rscale', 0)
 				.transition()
@@ -102,19 +127,19 @@ var twizzleLock = {},
 		}
 */
 
-	  var text = g.selectAll("text")
-	    .data(nodes)
-	    .enter().append("text")
-	      .attr("class", "label")
-	      .style("fill-opacity", function(d) { return d.parent === root ? 1 : 0; })
-				.attr('css-visible', function(d) { return d.parent === root ? 'true' : 'false'; })
+		var text = g.selectAll("text")
+			    .data(nodes)
+			    .enter().append("text")
+			    .attr("class", "label")
+			    .style("fill-opacity", function(d) { return d.parent === root ? 1 : 0; })
+			    .attr('css-visible', function(d) { return d.parent === root ? 'true' : 'false'; })
 	     // .style("display", function(d) { return d.parent === root ? "inline" : "none"; })
-	      .text(function(d) { return d.data.name; });
+			    .text(function(d) { return d.data.name; });
 
-	  var node = g.selectAll("circle,text");
+		var node = g.selectAll("circle,text");
 
-	  svg.style("background", color(-1))
-	     .on("click", function() { zoom(root); });
+		svg.style("background", color(-1))
+		   .on("click", function() { zoom(root); });
 
 		if (firstRun == true) {
 			view = root;
@@ -127,13 +152,6 @@ var twizzleLock = {},
 
 		zoom(focus);
 	}
-
-
-
-
-
-
-
 
 	function zoom(d) {
 		var focus0 = focus;
@@ -218,19 +236,22 @@ var twizzleLock = {},
 
 	update();
 
+	// Decommente ca aussi si tu as besoin
+	/*
 	setTimeout(function(){
 		DATA.children[0].children.push({"name": "YOUHOU", "size": 3938});
 
 		update();
 	}, 2000);
-
-
+	*/
+	// Pareil
+	/*
 	setTimeout(function(){
 		DATA.children[0].children[0].size = 6000;
 
 		update();
 	}, 6000);
-
+	*/
 
 
 
