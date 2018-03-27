@@ -18,8 +18,10 @@ app.get('/', function(req, res, next) {
 // Main
 
 var id = 1;
+var io_root = io.of("/");
 
-io.on('connection', function(socket) {
+io_root.on('connection', function(socket) {
+	var app_socket = null;
 	var user_id = id.toString(16);
 	++id;
 	
@@ -32,12 +34,14 @@ io.on('connection', function(socket) {
 	var app_io = io.of("/" + user_id);
 
 	app_io.on('connection', function(socket_app) {
+		app_socket = socket_app;
 		console.log("app connected to /" + user_id);
 
 		socket_app.emit("get id", {"id": "Hello on /" + user_id});
 
 		socket_app.on('disconnect', function() {
 			console.log("app disconnected from /" + user_id);
+			socket.emit("app disconnected", {"id": "/" + user_id});
 		});	
 	});
 	socket.emit("get id", {"id": user_id});
