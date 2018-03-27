@@ -38,7 +38,7 @@ window.onload = function () {
 		 {
 			 "name": "TOPIC 2",
 			 "children": [
-				{"name": "3", "size": 3938},
+				{"name": "3", "size": 5000},
 				{"name": "4", "size": 3938}
 			 ]
 		 },
