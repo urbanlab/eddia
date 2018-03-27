@@ -24,3 +24,7 @@
 .node--leaf {
   pointer-events: none;
 }
+
+circle, text {
+  /* transition:all 700ms cubic-bezier(0.68, -0.55, 0.265, 1.55); */
+}
