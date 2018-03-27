@@ -180,34 +180,6 @@ var twizzleLock = {},
 
 
 
-	function zoomTo(v) {
-		console.log('zoomTo');
-
-		var k = diameter / v[2];
-
-		view = v;
-
-		// g.selectAll('circle')
-		// 	.attr("r", function(d) { return (d.r) * k; });
-
-		// g.selectAll('circle,text')
-		// 	.attr("transform", function(d) { return "translate(" + ((d.x) - v[0]) * k + "," + ((d.y) - v[1]) * k + ")"; });
-
-/*
-		g.selectAll("text")
-			 .each(function(d) {
-			 	console.log(d.parent === focus ? d.data.name : '');
-			 })
-			 .filter(function(d) { return d.parent === focus })
-				 .style("fill-opacity", function(d) { return d.parent === focus ? 1 : 0; })
-				 .attr('css-visible', function(d) { return d.parent === focus ? 'true' : 'false'; });
-				 */
-	}
-
-
-
-
-
 	update();
 
 	setTimeout(function(){
