@@ -54,7 +54,7 @@ io_root.on('connection', function(socket) {
 		});	
 	});
 
-	socket.emit("get id", {"id": "/" + user_id});	
+	socket.emit("get id", {"id": user_id});	
 	update_data(socket, structs_path + user_id + ".json");
 	socket.on("add bubble", function(data) {
 		console.log("add bubble");
