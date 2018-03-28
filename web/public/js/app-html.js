@@ -82,35 +82,22 @@ window.onload = function () {
 }
 
 function init() {
-  DOM_screen.attr('data-view','topic');
+  setView('topic');
 
   DOM_screenBackground.on('click', function(e){
-    DOM_screen.attr('data-view','topic');
-    updateView();
+    setView('topic');
   });
 
-  createBubble('topic',{
-    name: DATA.name
-  });
-
-  createBubble('interest',{
-    name: 'Transports'
-  });
-
-  createBubble('interest',{
-    name: 'Imprévus externes'
-  });
-
-  createBubble('interest',{
-    name: 'Imprévus internes'
-  });
-
-setTimeout(function(){
-  changeBubbleSize('inc',{
-    type: 'interest',
-    name: 'Transports'
-  });
-},1000);
+  createBubble('topic', { name: DATA.name });
+  createBubble('interest', { name: 'Transports' });
+  createBubble('interest', { name: 'Imprévus externes' });
+  createBubble('interest', { name: 'Imprévus internes' });
+  // 
+  // setTimeout(function(){
+  //   changeBubbleSize('inc', { type: 'interest', name: 'Transports' });
+  //   changeBubbleSize('inc', { type: 'interest', name: 'Transports' });
+  //   changeBubbleSize('inc', { type: 'interest', name: 'Transports' });
+  // },1000);
 }
 
 function changeBubbleSize(mode, d) {
@@ -125,9 +112,26 @@ function changeBubbleSize(mode, d) {
     newScale = bubble.data('scale') - changeDiff;
   }
 
-  bubble.find('.bubble-scale').css({
-    transform: 'scale('+newScale+')'
-  });
+  bubble
+    .data('scale', newScale)
+    .find('.bubble-scale').css({
+      transform: 'scale('+newScale+')'
+    });
+}
+
+function setView(v, item = null) {
+  if (v == 'topic') {
+    $('.bubble--interest').removeClass('current');
+    DOM_screen.attr('data-view','topic');
+  }
+
+  if (v == 'interest') {
+    $('.bubble--interest').removeClass('current');
+    item.addClass('current');
+    DOM_screen.attr('data-view','interest');
+  }
+
+  updateView();
 }
 
 function createBubble(_type, d) {
@@ -139,20 +143,17 @@ function createBubble(_type, d) {
     .attr('data-type', type)
     .data('scale', 1)
     .on('click', function(){
-      DOM_screen.attr('data-view',type);
-
       if (type == 'topic') {
-        $('.bubble--interest').removeClass('current');
-        DOM_screen.attr('data-view','topic');
+        setView('topic');
       }
 
       if (type == 'interest') {
-        $('.bubble--interest').removeClass('current');
-        $(this).addClass('current');
-        DOM_screen.attr('data-view','interest');
+        if ($(this).hasClass('current')) {
+          setView('topic');
+        } else {
+          setView('interest', $(this));
+        }
       }
-
-      updateView();
     });
 
   var DOM_bubbleContainer = $('<div/>')
@@ -164,10 +165,25 @@ function createBubble(_type, d) {
   var DOM_bubbleBackground = $('<div/>')
     .addClass('bubble-background');
 
+  var DOM_bubbleBackgroundLayer1 = $('<div/>')
+    .addClass('bubble-background-layer bubble-background-layer-1')
+    .css({
+      'animation-delay': - parseInt(Math.random() * 10) +'s'
+    });
+
+  var DOM_bubbleBackgroundLayer2 = $('<div/>')
+    .addClass('bubble-background-layer bubble-background-layer-2')
+    .css({
+      'animation-delay': - parseInt(Math.random() * 10) +'s'
+    });
+
   var DOM_bubbleInner = $('<div/>')
     .addClass('bubble-inner')
     .text(d.name);
 
+  DOM_bubbleBackground
+    .append(DOM_bubbleBackgroundLayer1)
+    .append(DOM_bubbleBackgroundLayer2);
 
   DOM_bubbleScale
     .append(DOM_bubbleBackground)
@@ -201,6 +217,9 @@ function updateView() {
   }
 }
 
+
+
+
 function setPositionOfInterestBubblesInInterestView() {
   console.log('setPositionOfInterestBubblesInInterestView');
 
@@ -221,6 +240,9 @@ function setPositionOfInterestBubblesInInterestView() {
   }
 }
 
+
+
+
 function setPositionOfInterestBubblesInTopicView() {
   var radius = 350;
   var nbInterestBubbles = $('.bubble--interest').length;
@@ -234,23 +256,6 @@ function setPositionOfInterestBubblesInTopicView() {
   }
 }
 
-function createInterestBubble(d) {
-  var DOM_bubble = $('<div/>')
-    .addClass('bubble bubble--interest')
-    .on('click', function(){
-      $('.bubble--interest').removeClass('current');
-      $(this).addClass('current');
-      DOM_screen.attr('data-view','interest');
-    });
-
-  var DOM_bubbleInner = $('<div/>')
-    .addClass('bubble-inner')
-    .text(d.name);
-
-  DOM_bubble
-    .append(DOM_bubbleInner)
-    .appendTo(DOM_screen);
-}
 
 
 
