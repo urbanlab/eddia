@@ -2,7 +2,7 @@
 var DATA;
 // Si tu veux utiliser les DATA en dur comme ca
 // Decommente ca
-/*
+
 DATA = {
  "name": "TOPIC",
  "children": [
@@ -17,7 +17,7 @@ DATA = {
 	 {"name": "2", "size": 3938},
  ]
 };
-*/
+
 
 window.onload = function () {
 
@@ -34,7 +34,7 @@ window.onload = function () {
 	socket.on("get id", function(data) {
 		console.log(data.id);
 	});
-
+/*
 	// Commente ca
 	socket.on("update data", function(data) {
 		console.log("UPDATEDATA");
@@ -49,16 +49,19 @@ window.onload = function () {
 		DATA = data;
 		start();
 	});
+	*/
 
 	// Decommente ca
-	// start();
+	 start();
 }
 
 function start() {
 	var svg = d3.select("svg"),
-	    margin = -100,
+	    margin = 100,
 	    diameter = +svg.attr("height"),
 	    g = svg.append("g").attr("transform", "translate(" + svg.attr("width") / 2 + "," + diameter / 2 + ")");
+
+
 
 	var color = d3.scaleLinear()
 	    .domain([-1, 5])
@@ -68,10 +71,16 @@ function start() {
 	var pack = d3.pack()
 	    .size([diameter - margin, diameter - margin])
 	    .padding(10);
+
+
+
+	svg.style("background", color(-1))
+		 .on("click", function() { zoom(root); });
 /*
 	d3.json("nodes.json", function(error, root) {
 	  if (error) throw error;
 */
+/*
 	var DATA = {
 	 "name": "TOPIC",
 	 "children": [
@@ -116,7 +125,7 @@ function start() {
 		 },
 	 ]
 	};
-
+*/
 	var firstRun = true;
 	var view, focus;
 
@@ -132,24 +141,24 @@ function start() {
 	 		focus = root;
 		}
 
-	  	var nodes = pack(root).descendants();
+  	var nodes = pack(root).descendants();
 
-	  	var circle = g.selectAll("circle")
-			      .data(nodes)
-			      .enter().append("circle")
-			      .attr("class", function(d) { return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root"; })
-			      .attr('id', function(d) { return d.data.name; })
-			      .style("fill", function(d) { return d.children ? color(d.depth) : null; })
-			      .on("click", function(d) { if (focus !== d) zoom(d), d3.event.stopPropagation(); });
-				/*
-				.attr('rscale', 0)
-				.transition()
-				.delay(function(d) { return d.depth * 50; })
-				.duration(5000)
-    		.attrTween("rscale", function(d) {
-					return d3.interpolate(0, 1);
-				});
-				*/
+  	var circle = g.selectAll("circle")
+		      .data(nodes)
+		      .enter().append("circle")
+		      .attr("class", function(d) { return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root"; })
+		      .attr('id', function(d) { return d.data.name; })
+		      .style("fill", function(d) { return d.children ? color(d.depth) : null; })
+		      .on("click", function(d) { if (focus !== d) zoom(d), d3.event.stopPropagation(); });
+			/*
+			.attr('rscale', 0)
+			.transition()
+			.delay(function(d) { return d.depth * 50; })
+			.duration(5000)
+  		.attrTween("rscale", function(d) {
+				return d3.interpolate(0, 1);
+			});
+			*/
 
 
 /*
@@ -181,9 +190,6 @@ function start() {
 
 		var node = g.selectAll("circle,text");
 
-		svg.style("background", color(-1))
-		   .on("click", function() { zoom(root); });
-
 		if (firstRun == true) {
 			view = root;
 		//	zoomTo([focus.x, focus.y, focus.r * 2 + margin]);
@@ -204,7 +210,7 @@ function start() {
 		console.log('Focus from [', focus0.data.name, '] to [', focus.data.name,']');
 		console.log('Item focused:', d.data.name);
 
-		console.log(focus0.r, focus.r);
+		console.log(focus0, focus);
 
 		var k = diameter / (focus.r * 2 + margin);
 
@@ -219,9 +225,9 @@ function start() {
  			.transition()
  			.duration(600)
  			.attr("transform", function(d) { return "translate(" + (d.x - focus.x) * k + "," + (d.y - focus.y) * k + ")"; })
-			.style("fill-opacity", function(d) { return d.parent === focus ? 1 : 0; })
-			.on("start", function(d) { if (d.parent === focus) this.style.display = "inline"; })
-			.on("end", function(d) { if (d.parent !== focus) this.style.display = "none"; });
+			.style("fill-opacity", function(d) { console.log('d',d); console.log('focus',focus); return d.parent != null ? d.parent.data.name === focus.data.name ? 1 : 0 : 0; })
+			.on("start", function(d) { if (d.parent != null) if (d.parent.data.name === focus.data.name) this.style.display = "inline"; })
+			.on("end", function(d) { if (d.parent != null) if (d.parent.data.name !== focus.data.name) this.style.display = "none"; });
 
 /*
 
@@ -244,13 +250,17 @@ function start() {
 	update();
 
 	// Decommente ca aussi si tu as besoin
-	/*
+
 	setTimeout(function(){
 		DATA.children[0].children.push({"name": "YOUHOU", "size": 3938});
 
 		update();
+
+		// setTimeout(function(){
+		// 		$('svg').trigger('click');
+		// },1500);
 	}, 2000);
-	*/
+
 	// Pareil
 	/*
 	setTimeout(function(){

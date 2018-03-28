@@ -26,12 +26,14 @@ var io_root = io.of("/");
 io_root.on('connection', function(socket) {
 	var user_id = id.toString(16);
 
-	fs.writeFile(structs_path + user_id + ".json", '{"name": "Retard au travail", "children": [ {"name": "salut", "children": [] } ]}', function(err) {
+	fs.writeFileSync(structs_path + user_id + ".json", '{"name": "Retard au travail", "children": [ {"name": "salut", "children": [] } ]}', function(err) {
 		if (err) throw err;
 		console.log("File created");
 	});
 
-	++id;
+	// Just to avoid creating too much .json files
+	// let's stick to one unique id
+	// ++id;
 
 	app.get('/' + user_id, function(req, res, nest) {
 		res.render('app');
@@ -45,6 +47,7 @@ io_root.on('connection', function(socket) {
 		console.log("app connected to /" + user_id);
 
 		socket_app.emit("get id", {"id": "Hello on /" + user_id});
+//		socket_app.emit("update data", get_data(structs_path + user_id + ".json"));
 
 		socket_app.on("get data", function() {
 			socket_app.emit("get data", get_data(structs_path + user_id + ".json"));
@@ -62,7 +65,9 @@ io_root.on('connection', function(socket) {
 	});
 
 	socket.emit("get id", {"id": user_id});
+
 	update_data(socket, structs_path + user_id + ".json");
+
 	socket.on("add bubble", function(data) {
 		var struct = get_data(structs_path + user_id + ".json");
 		if (struct == null || struct == undefined) {
@@ -136,5 +141,5 @@ function update_data(socket, filename) {
 }
 
 function get_data(filename) {
-	return JSON.parse(fs.readFileSync(filename));
+	return JSON.parse(fs.readFileSync(filename, "utf8"));
 }
