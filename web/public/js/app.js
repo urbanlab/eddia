@@ -15,20 +15,18 @@ window.onload = function () {
 	});
 
 	var svg = d3.select("svg"),
-	    margin = 20,
-	    diameter = +svg.attr("width"),
-	    g = svg.append("g").attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
+	    margin = -100,
+	    diameter = +svg.attr("height"),
+	    g = svg.append("g").attr("transform", "translate(" + svg.attr("width") / 2 + "," + diameter / 2 + ")");
 
 	var color = d3.scaleLinear()
 	    .domain([-1, 5])
-	    .range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
+	    .range(["rgb(56,64,100)", "rgb(80,230,200)"])
 	    .interpolate(d3.interpolateHcl);
 
 	var pack = d3.pack()
 	    .size([diameter - margin, diameter - margin])
-	    .padding(2);
-var twizzleLock = {},
-    plonkLock = {};
+	    .padding(10);
 /*
 	d3.json("nodes.json", function(error, root) {
 	  if (error) throw error;
@@ -38,14 +36,44 @@ var twizzleLock = {},
 	 "name": "TOPIC",
 	 "children": [
 		 {
-			 "name": "TOPIC 2",
+			 "name": "CAT 1",
 			 "children": [
 				{"name": "3", "size": 5000},
-				{"name": "4", "size": 3938}
+				{"name": "4", "size": 3938},
+ 				{"name": "3", "size": 5000},
+ 				{"name": "4", "size": 3938},
+				{"name": "4", "size": 3938},
+ 				{"name": "3", "size": 5000},
+ 				{"name": "4", "size": 3938},
+				{"name": "4", "size": 3938},
+ 				{"name": "3", "size": 5000},
+ 				{"name": "4", "size": 3938},
 			 ]
 		 },
-		 {"name": "1", "size": 3938},
-		 {"name": "2", "size": 3938},
+		 {
+			 "name": "CAT 2",
+			 "children": [
+				{"name": "3", "size": 5000},
+				{"name": "4", "size": 3938},
+ 				{"name": "3", "size": 5000},
+ 				{"name": "4", "size": 3938},
+				{"name": "4", "size": 3938},
+ 				{"name": "3", "size": 5000},
+ 				{"name": "4", "size": 3938},
+			 ]
+		 },
+		 {
+			 "name": "CAT 3",
+			 "children": [
+				{"name": "3", "size": 5000},
+				{"name": "4", "size": 3938},
+ 				{"name": "3", "size": 5000},
+ 				{"name": "4", "size": 3938},
+				{"name": "4", "size": 3938},
+ 				{"name": "3", "size": 5000},
+ 				{"name": "4", "size": 3938},
+			 ]
+		 },
 	 ]
 	};
 

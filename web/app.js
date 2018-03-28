@@ -13,7 +13,7 @@ app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', function(req, res, next) {
-	res.render('manager');	
+	res.render('manager');
 });
 
 // Main
@@ -26,14 +26,14 @@ var io_root = io.of("/");
 io_root.on('connection', function(socket) {
 	var app_socket = null;
 	var user_id = id.toString(16);
-	
+
 	fs.writeFile(structs_path + user_id + ".json", '{"name": "Retard au travail", "children": [ {"name": "salut", "children": [] } ]}', function(err) {
 		if (err) throw err;
 		console.log("File created");
 	});
-	
+
 	++id;
-	
+
 	app.get('/' + user_id, function(req, res, nest) {
 		res.render('app');
 	});
@@ -51,10 +51,10 @@ io_root.on('connection', function(socket) {
 		socket_app.on('disconnect', function() {
 			console.log("app disconnected from /" + user_id);
 			socket.emit("app disconnected", {"id": "/" + user_id});
-		});	
+		});
 	});
 
-	socket.emit("get id", {"id": user_id});	
+	socket.emit("get id", {"id": user_id});
 	update_data(socket, structs_path + user_id + ".json");
 	socket.on("add bubble", function(data) {
 		console.log("add bubble");
@@ -68,8 +68,9 @@ io_root.on('connection', function(socket) {
 				node.children.push(data.bubble);
 				fs.writeFile(structs_path + user_id + ".json", JSON.stringify(struct), function(err) {
 					if (err) throw err;
+
+					update_data(socket, structs_path + user_id + ".json");
 				});
-				update_data(socket, structs_path + user_id + ".json");
 			}
 		});
 	});
@@ -77,7 +78,7 @@ io_root.on('connection', function(socket) {
 	socket.on('disconnect', function() {
 		console.log("manager disconnect from /" + user_id);
 	});
-	
+
 });
 
 server.listen(3000);
