@@ -24,7 +24,6 @@ var id = 1;
 var io_root = io.of("/");
 
 io_root.on('connection', function(socket) {
-	var app_socket = null;
 	var user_id = id.toString(16);
 
 	fs.writeFile(structs_path + user_id + ".json", '{"name": "Retard au travail", "children": [ {"name": "salut", "children": [] } ]}', function(err) {
@@ -43,10 +42,18 @@ io_root.on('connection', function(socket) {
 	var app_io = io.of("/" + user_id);
 
 	app_io.on('connection', function(socket_app) {
-		app_socket = socket_app;
 		console.log("app connected to /" + user_id);
 
 		socket_app.emit("get id", {"id": "Hello on /" + user_id});
+
+		socket_app.on("get data", function() {
+			socket_app.emit("get data", get_data(structs_path + user_id + ".json"));
+		});
+
+		socket_app.on("update data", function() {
+			console.log("arrived to");
+			socket_app.emit("update data", get_data(structs_path + user_id + ".json"));
+		});
 
 		socket_app.on('disconnect', function() {
 			console.log("app disconnected from /" + user_id);
@@ -57,8 +64,31 @@ io_root.on('connection', function(socket) {
 	socket.emit("get id", {"id": user_id});
 	update_data(socket, structs_path + user_id + ".json");
 	socket.on("add bubble", function(data) {
-		console.log("add bubble");
-		fs.readFile(structs_path + user_id + ".json", function(err, struct) {
+		var struct = get_data(structs_path + user_id + ".json");
+		if (struct == null || struct == undefined) {
+			console.log("Should not come here");
+			return;
+		}
+		var node = findNode(data.parent, struct);
+		if (node == null) {
+			console.log("Error in fs.readFile(" + structs_path + user_id + ".json), '" + data.parent + "' doesn't exist");
+		} else {
+			node.children.push(data.bubble);
+			fs.writeFileSync(structs_path + user_id + ".json", JSON.stringify(struct), function(err) {
+				if (err) throw err;
+			});
+			socket.emit("update data", struct);
+		}
+	});
+
+	socket.on("add category", function(data) {
+		var struct = JSON.parse(fs.readFileSync(structs_path + user_id + ".json"));
+		if (struct == null || struct == undefined) {
+			console.log("Should not come here");
+			return;
+		}
+		struct.children.push({"name": data.name, "children": []});
+		fs.writeFileSync(structs_path + user_id + ".json", JSON.stringify(struct), function(err) {
 			if (err) throw err;
 			struct = JSON.parse(struct);
 			var node = findNode(data.parent, struct);
@@ -73,6 +103,9 @@ io_root.on('connection', function(socket) {
 				});
 			}
 		});
+		socket.emit("update data", struct);
+		console.log("to");
+		io.to("/" + user_id).emit("update data");
 	});
 
 	socket.on('disconnect', function() {
@@ -97,10 +130,11 @@ function findNode(name, currentNode) {
 }
 
 function update_data(socket, filename) {
-	var data = null;
-	fs.readFile(filename, function(err, struct) {
-		if (err) throw err;
-		data = JSON.parse(struct);
+	var data = get_data(filename);
+	if (data)
 		socket.emit("update data", data);
-	});
+}
+
+function get_data(filename) {
+	return JSON.parse(fs.readFileSync(filename));
 }
