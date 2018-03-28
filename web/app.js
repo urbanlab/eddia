@@ -39,6 +39,10 @@ io_root.on('connection', function(socket) {
 		res.render('app');
 	});
 
+	app.get('/html-' + user_id, function(req, res, nest) {
+		res.render('app-html');
+	});
+
 	console.log("manager connect to /" + user_id);
 
 	var app_io = io.of("/" + user_id);
