@@ -124,7 +124,7 @@ function changeBubbleSize(mode, d) {
 function setView(v, d = null) {
   if (v == 'topic') {
     $('.bubble--interest').removeClass('current');
-    $('.bubble--word').removeClass('related');
+    $('.bubble--word').removeClass('related current');
 
     // $('.bubble--word')
     //   .css({
@@ -178,6 +178,12 @@ function setView(v, d = null) {
   if (v == 'word') {
     var interestBubble = $('.bubble--interest[data-name="'+d.interest+'"]');
     var wordBubble = $('.bubble--word[data-name="'+d.name+'"]');
+
+    $('.bubble--interest').removeClass('current');
+    interestBubble.addClass('current');
+
+    $('.bubble--word').removeClass('current');
+    wordBubble.addClass('current');
 
     console.log(interestBubble);
     console.log(wordBubble);
@@ -264,6 +270,16 @@ function createBubble(_type, d) {
         var currentDeltaY = $(target).data('y') + (event.gesture.deltaY);
         var currentRotation = $(target).data('rotation') + (event.gesture.rotation);
 
+        if (currentRotation > 360) {
+          currentRotation = currentRotation - 360;
+        }
+
+        if (currentRotation < 0) {
+          currentRotation = 360 + currentRotation;
+        }
+
+        $('.console').text($('.console').text() + '\r\npinch pan : '+currentRotation);
+
         $(target).css({
           'transform': 'translate(' + currentDeltaX + 'px,' + currentDeltaY + 'px)'
         });
@@ -281,6 +297,8 @@ function createBubble(_type, d) {
         var target = event.target;
 
         $(target).removeClass('no-transition');
+
+      //   $('.console').text(($(target).data('rotation')));
 
         $(target).data('scale', ($(target).data('scale') * event.gesture.scale));
         $(target).data('x', ($(target).data('x') + (event.gesture.deltaX)));
@@ -354,6 +372,29 @@ function updateView() {
   }
 }
 
+
+
+function removeBubble(b) {
+  var type = b.data('type');
+  var name = b.data('name');
+  var wordName = null;
+
+  if (type == 'word') {
+    var interestName = b.data('interest');
+  }
+
+  if (type == 'content') {
+    var interestName = b.data('interest');
+    var wordName = b.data('word');
+  }
+
+  socket.emit('bubble/remove', {
+    type: type,
+    interest: interestName,
+    word: wordName,
+    name: name
+  });
+}
 
 
 
