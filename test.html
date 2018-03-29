@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<!--
+Created using JS Bin
+http://jsbin.com
+
+Copyright (c) 2018 by anonymous (http://jsbin.com/newocuzuve/1/edit)
+
+Released under the MIT license: http://jsbin.mit-license.org
+-->
+<meta name="robots" content="noindex">
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>JS Bin</title>
+</head>
+<body>
+
+<script id="jsbin-javascript">
+
+var json = {
+  "travail": {
+    "adaptabilité_des_horaires": [
+      "flexibilité",
+      "souplesse",
+      "adapter",
+      "capacité",
+      "adaptable",
+      "écosystème",
+      "changement",
+      "survie",
+      "mobilité",
+      "agilité",
+      "légèreté",
+      "segmentation",
+      "aisance",
+      "fluidité",
+      "harmonie",
+      "rééquilibré",
+      "réguler",
+      "liberté",
+      "bouchon",
+      "embouteillage",
+      "congestion",
+      "flux",
+      "mobilité",
+      "aller au travail",
+      "perte de temps",
+      "trajet",
+      "alternatif",
+      "traverser",
+      "périphérique",
+      "route",
+      "autoroute",
+      "national",
+      "départemental",
+      "fluidifié",
+      "vitesse de déplacement",
+      "lent",
+      "régulation",
+      "petite route",
+      "désengorger",
+      "accident"
+    ],
+    "déséquilibre_du_temps_de_travail": [
+      "crise",
+      "défaut",
+      "dérégulation",
+      "disproportion",
+      "insensé",
+      "irresponsable",
+      "inégalité",
+      "instable",
+      "tension",
+      "accès",
+      "avantages",
+      "jalousie",
+      "pénalité"
+      ],
+      "mauvaise_organistation": [
+      "organisme",
+      "planification",
+      "constitution",
+      "coopération",
+      "bureau",
+      "collectif",
+      "désorganisation",
+      "plan",
+      "gestion",
+      "accord",
+      "responsabilité",
+      "structure",
+      "compositions",
+      "stratégie",
+      "décalage",
+      "décalé",
+      "en retard",
+      "plage horaire",
+      "emploi du temps",
+      "temps perdu",
+      "être en poste",
+      "poste fixe",
+      "mise en place",
+      "souplesse",
+      "ajustement"
+      ],
+      "recherche_d_indépendance": [
+      "liberté",
+      "libre- arbitre",
+      "volonté",
+      "disponible",
+      "audacieux",
+      "consentement",
+      "individualisé",
+      "autonomie",
+      "volontaire",
+      "voté",
+      "forcé",
+      "rendre libre l’employer"
+      ],
+      "création_de_conflit": [
+      "règlement",
+      "neutralité",
+      "rivalité",
+      "régulation",
+      "opposition",
+      "litige",
+      "opposition",
+      "affrontement",
+      "clash",
+      "tension",
+      "compétition",
+      "désaccord",
+      "pacifique",
+      "ennemi",
+      "revendication",
+      "concurrence",
+      "contestation",
+      "controverse",
+      "discorde",
+      "division"
+      ],
+      "meilleur_répartition_du_travail": [
+      "gain de temps",
+      "distribution",
+      "inégalité",
+      "proportionnelle",
+      "équitable",
+      "répartir",
+      "équilibre",
+      "redistribution",
+      "équité",
+      "proportion",
+      "équilibrée",
+      "productivité",
+      "régression",
+      "rôles",
+      "égalisation",
+      "réajustement",
+      "régulation"
+      ],
+      "climat_de_confiance": [
+      "méfiance",
+      "abandon",
+      "fidélité",
+      "trahir",
+      "sincérité",
+      "honnêteté",
+      "stabilité",
+      "crédibilité",
+      "certitude",
+      "sérénité",
+      "tromper",
+      "mensonge",
+      "entente",
+      "union"
+      ],
+      "optimisation_du_travail": [
+      "amélioration",
+      "solution",
+      "résolution",
+      "efficacité",
+      "méthodes",
+      "anticipation",
+      "estimation",
+      "contrôle",
+      "Itinéraire",
+      "parcours",
+      "calculer",
+      "anticipé",
+      "rapidité",
+      "prévention",
+      "maximisation"
+      ],
+      "anticipation": [
+      "estimation",
+      "contrôle",
+      "itinéraire",
+      "parcours",
+      "calculer",
+      "anticipé",
+      "rapidité",
+      "prévention",
+      "trajet",
+      "habituel",
+      "départ",
+      "séquence",
+      "flux",
+      "optimisation"
+      ],
+      "fatigue": [
+      "stress",
+      "inconfort",
+      "inquiétude",
+      "fatigue",
+      "impatient",
+      "morose",
+      "maussade",
+      "dépression",
+      "mélancolique",
+      "incompatibilité",
+      "taciturne",
+      "exécrable",
+      "chagrin",
+      "irritabilité",
+      "dépression",
+      "déséquilibre",
+      "capricieux",
+      "hargne",
+      "trouble",
+      "massacrant",
+      "irritation",
+      "colère",
+      "anxiété",
+      "bourru",
+      "insomnie",
+      "colérique",
+      "tristesse",
+      "irritable",
+      "lunatique",
+      "aigreur",
+      "irritation",
+      "agressivité",
+      "méchante",
+      "changeante",
+      "triste",
+      "irritation",
+      "antidépresseur",
+      "agressivité",
+      "affecter",
+      "suicide",
+      "irrité",
+      "dispute",
+      "désaccord",
+      "malentendu",
+      "rancœur"
+      ],
+      "bien_être": [
+      "gaieté",
+      "joyeuse",
+      "humour",
+      "joie",
+      "jovialité",
+      "jovial entrain",
+      "optimiste",
+      "enjouement",
+      "bien être",
+      "agréable",
+      "satisfaction",
+      "gaîté",
+      "euphorique",
+      "euphorie",
+      "bon enfant",
+      "affective",
+      "agréable",
+      "gentillesse",
+      "stimulant",
+      "excitation",
+      "égale"
+      ],
+      "conscience": [
+      "bienveillance",
+      "partage",
+      "échange",
+      "citoyen"
+      ],
+      "horaire": [
+      "heure",
+      "arrivé",
+      "matin",
+      "soir",
+      "temps",
+      "différé",
+      "heure de départ",
+      "arrivé",
+      "temps de travail",
+      "arrivé plus",
+      "tard",
+      "tôt",
+      "plus tard",
+      "calendrier",
+      "emploi",
+      "guide",
+      "mémento",
+      "plan",
+      "planning",
+      "programme"
+      ],
+      "transport_en_commun": [
+      "vélo",
+      "cycliste",
+      "piéton",
+      "bus",
+      "covoiturage",
+      "collaboratif",
+      "pollution",
+      "tram",
+      "métro",
+      "multimodal",
+      "voiture",
+      "autonome"
+      ],
+      "transport": [
+        "transport",
+      "vélo",
+      "cycliste",
+      "piéton",
+      "bus",
+      "covoiturage",
+      "collaboratif",
+      "pollution",
+      "tram",
+      "métro",
+      "multimodal",
+      "voiture",
+      "autonome",
+      "voiture",
+      "voiture autonome",
+      "bagnole",
+      "trajet",
+      "route",
+      "mobilité"
+      ],
+      "signalétique": [
+      "feu rouge",
+      "indications",
+      "circulation",
+      "passage piéton",
+      "mobilier urbain",
+      "visualisé",
+      "danger",
+      "balisage",
+      "descriptif",
+      "guidage"
+      ]
+    }
+  }
+
+function createAudioMeter(audioContext,clipLevel,averaging,clipLag) {
+  var processor = audioContext.createScriptProcessor(512);
+  processor.onaudioprocess = volumeAudioProcess;
+  processor.clipping = false;
+  processor.lastClip = 0;
+  processor.volume = 0;
+  processor.clipLevel = clipLevel || 0.98;
+  processor.averaging = averaging || 0.95;
+  processor.clipLag = clipLag || 750;
+  processor.connect(audioContext.destination);
+
+  processor.checkClipping =
+    function(){
+      if (!this.clipping)
+        return false;
+      if ((this.lastClip + this.clipLag) < window.performance.now())
+        this.clipping = false;
+      return this.clipping;
+    };
+  processor.shutdown =
+    function(){
+      this.disconnect();
+      this.onaudioprocess = null;
+    };
+  return processor;
+}
+function volumeAudioProcess( event ) {
+  var buf = event.inputBuffer.getChannelData(0);
+    var bufLength = buf.length;
+  var sum = 0;
+    var x;
+    for (var i=0; i<bufLength; i++) {
+      x = buf[i];
+      if (Math.abs(x)>=this.clipLevel) {
+        this.clipping = true;
+        this.lastClip = window.performance.now();
+      }
+      sum += x * x;
+    }
+    var rms =  Math.sqrt(sum / bufLength);
+    this.volume = Math.max(rms, this.volume*this.averaging);
+}
+var langs =
+[['Afrikaans',       ['af-ZA']],
+ ['Bahasa Indonesia',['id-ID']],
+ ['Bahasa Melayu',   ['ms-MY']],
+ ['Català',          ['ca-ES']],
+ ['Čeština',         ['cs-CZ']],
+ ['Deutsch',         ['de-DE']],
+ ['English',         ['en-AU', 'Australia'],
+                     ['en-CA', 'Canada'],
+                     ['en-IN', 'India'],
+                     ['en-NZ', 'New Zealand'],
+                     ['en-ZA', 'South Africa'],
+                     ['en-GB', 'United Kingdom'],
+                     ['en-US', 'United States']],
+ ['Español',         ['es-AR', 'Argentina'],
+                     ['es-BO', 'Bolivia'],
+                     ['es-CL', 'Chile'],
+                     ['es-CO', 'Colombia'],
+                     ['es-CR', 'Costa Rica'],
+                     ['es-EC', 'Ecuador'],
+                     ['es-SV', 'El Salvador'],
+                     ['es-ES', 'España'],
+                     ['es-US', 'Estados Unidos'],
+                     ['es-GT', 'Guatemala'],
+                     ['es-HN', 'Honduras'],
+                     ['es-MX', 'México'],
+                     ['es-NI', 'Nicaragua'],
+                     ['es-PA', 'Panamá'],
+                     ['es-PY', 'Paraguay'],
+                     ['es-PE', 'Perú'],
+                     ['es-PR', 'Puerto Rico'],
+                     ['es-DO', 'República Dominicana'],
+                     ['es-UY', 'Uruguay'],
+                     ['es-VE', 'Venezuela']],
+ ['Euskara',         ['eu-ES']],
+ ['Français',        ['fr-FR']],
+ ['Galego',          ['gl-ES']],
+ ['Hrvatski',        ['hr_HR']],
+ ['IsiZulu',         ['zu-ZA']],
+ ['Íslenska',        ['is-IS']],
+ ['Italiano',        ['it-IT', 'Italia'],
+                     ['it-CH', 'Svizzera']],
+ ['Magyar',          ['hu-HU']],
+ ['Nederlands',      ['nl-NL']],
+ ['Norsk bokmål',    ['nb-NO']],
+ ['Polski',          ['pl-PL']],
+ ['Português',       ['pt-BR', 'Brasil'],
+                     ['pt-PT', 'Portugal']],
+ ['Română',          ['ro-RO']],
+ ['Slovenčina',      ['sk-SK']],
+ ['Suomi',           ['fi-FI']],
+ ['Svenska',         ['sv-SE']],
+ ['Türkçe',          ['tr-TR']],
+ ['български',       ['bg-BG']],
+ ['Pусский',         ['ru-RU']],
+ ['Српски',          ['sr-RS']],
+ ['한국어',            ['ko-KR']],
+ ['中文',             ['cmn-Hans-CN', '普通话 (中国大陆)'],
+                     ['cmn-Hans-HK', '普通话 (香港)'],
+                     ['cmn-Hant-TW', '中文 (台灣)'],
+                     ['yue-Hant-HK', '粵語 (香港)']],
+ ['日本語',           ['ja-JP']],
+ ['Lingua latīna',   ['la']]];
+
+var final_transcript = '';
+var recognizing;
+var ignore_onend = true;
+var start_timestamp;
+
+
+if (!('webkitSpeechRecognition' in window)) {
+  upgrade();
+} else {
+  var recognition = new webkitSpeechRecognition();
+  recognition.continuous = true;
+  recognition.interimResults = true;
+
+  recognition.onstart = function() {
+    recognizing = true
+  }
+  recognition.onresult = function(event) {
+    var interim_transcript = '';
+    for (var i = event.resultIndex; i < event.results.length; ++i) {
+      if (event.results[i].isFinal) {
+        var transcriptFinal = event.results[i][0].transcript;
+        final_transcript += transcriptFinal;
+      } else {
+        var transcriptFinal = event.results[i][0].transcript;
+        interim_transcript += transcriptFinal;
+      }
+      var test = final_transcript;
+    console.log(transcriptFinal);
+    console.log(test);
+    for (var i = 0; i < json.travail.signalétique.length; i++) {
+      if (test.indexOf(json.travail.signalétique[i]) != -1)
+        console.log("signalétique: " + json.travail.signalétique[i]);
+    }
+    for (i = 0; i < json.travail.transport.length; i++) {
+      if (test.indexOf(json.travail.transport[i]) != -1)
+        console.log("transport: " + json.travail.transport[i]);
+    }
+    for (i = 0; i < json.travail.transport_en_commun.length; i++) {
+      if (test.indexOf(json.travail.transport_en_commun[i]) != -1)
+        console.log("transport_en_commun: " + json.travail.transport_en_commun[i]);
+    }
+    for (i = 0; i < json.travail.horaire.length; i++) {
+      if (test.indexOf(json.travail.horaire[i]) != -1)
+        console.log("horaire: " + json.travail.horaire[i]);
+    }
+    for (i = 0; i < json.travail.conscience.length; i++) {
+      if (test.indexOf(json.travail.conscience[i]) != -1)
+        console.log("conscience: " + json.travail.conscience[i]);
+    }
+    for (i = 0; i < json.travail.bien_être.length; i++) {
+      if (test.indexOf(json.travail.bien_être[i]) != -1)
+        console.log("bien_être: " + json.travail.bien_être[i]);
+    }
+    for (i = 0; i < json.travail.fatigue.length; i++) {
+      if (test.indexOf(json.travail.fatigue[i]) != -1)
+        console.log("fatigue: " + json.travail.fatigue[i]);
+    }
+    for (i = 0; i < json.travail.anticipation.length; i++) {
+      if (test.indexOf(json.travail.anticipation[i]) != -1)
+        console.log("anticipation: " + json.travail.anticipation[i]);
+    }
+    for (i = 0; i < json.travail.optimisation_du_travail.length; i++) {
+      if (test.indexOf(json.travail.optimisation_du_travail[i]) != -1)
+        console.log("optimisation_du_travail: " + json.travail.optimisation_du_travail[i]);
+    }
+    for (i = 0; i < json.travail.climat_de_confiance.length; i++) {
+      if (test.indexOf(json.travail.climat_de_confiance[i]) != -1)
+        console.log("climat_de_confiance: " + json.travail.climat_de_confiance[i]);
+    }
+    for (i = 0; i < json.travail.meilleur_répartition_du_travail.length; i++) {
+      if (test.indexOf(json.travail.meilleur_répartition_du_travail[i]) != -1)
+        console.log("meilleur_répartition_du_travail: " + json.travail.meilleur_répartition_du_travail[i]);
+    }
+    for (i = 0; i < json.travail.création_de_conflit.length; i++) {
+      if (test.indexOf(json.travail.création_de_conflit[i]) != -1)
+        console.log("création_de_conflit: " + json.travail.création_de_conflit[i]);
+    }
+    for (i = 0; i < json.travail.recherche_d_indépendance.length; i++) {
+      if (test.indexOf(json.travail.recherche_d_indépendance[i]) != -1)
+        console.log("recherche_d_indépendance: " + json.travail.recherche_d_indépendance[i]);
+    }
+    for (i = 0; i < json.travail.mauvaise_organistation.length; i++) {
+      if (test.indexOf(json.travail.mauvaise_organistation[i]) != -1)
+        console.log("mauvaise_organistation: " + json.travail.mauvaise_organistation[i]);
+    }
+    for (i = 0; i < json.travail.déséquilibre_du_temps_de_travail.length; i++) {
+      if (test.indexOf(json.travail.déséquilibre_du_temps_de_travail[i]) != -1)
+        console.log("déséquilibre_du_temps_de_travail: " + json.travail.déséquilibre_du_temps_de_travail[i]);
+    }
+    for (i = 0; i <= json.travail.adaptabilité_des_horaires.length; i++) {
+      if (test.indexOf(json.travail.adaptabilité_des_horaires[i]) != -1)
+        console.log("adaptabilité_des_horaires: " + json.travail.adaptabilité_des_horaires[i]);
+    }
+    }
+  }
+  recognition.onerror = function(event) {
+    console.log ("error in recognition");
+  }
+  recognition.onend = function() {
+    recognizing = false;
+    if (!final_transcript)
+      return;
+    if (window.getSelection) {
+      window.getSelection().removeAllRanges();
+      var range = document.createRange();
+    }
+  }
+  };
+
+var audioContext = null;
+var meter = null;
+var rafID = null;
+
+window.onload = function() {
+    window.AudioContext = window.AudioContext || window.webkitAudioContext;
+    audioContext = new AudioContext();
+    try {
+        navigator.getUserMedia =
+            navigator.getUserMedia ||
+            navigator.webkitGetUserMedia ||
+            navigator.mozGetUserMedia;
+        navigator.getUserMedia(
+        {
+            "audio": {
+                "mandatory": {
+                    "googEchoCancellation": "false",
+                    "googAutoGainControl": "false",
+                    "googNoiseSuppression": "false",
+                    "googHighpassFilter": "false"
+                },
+                "optional": []
+            },
+        }, gotStream, didntGetStream);
+    } catch (e) {
+        alert('getUserMedia threw exception :' + e);
+    }
+}
+function didntGetStream() {
+    alert('Stream generation failed.');
+}
+var mediaStreamSource = null;
+
+function gotStream(stream) {
+    mediaStreamSource = audioContext.createMediaStreamSource(stream);
+    meter = createAudioMeter(audioContext);
+    mediaStreamSource.connect(meter);
+    listenLoop();
+}
+function listenLoop() {
+  if (meter.volume < 0.01) {
+      recognition.stop();
+  } else {
+      if (!recognizing) {
+        recognition.start();
+      }
+  }
+  rafID = window.requestAnimationFrame( listenLoop );
+}
+</script>
+</body>
+</html>
