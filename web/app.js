@@ -21,121 +21,142 @@ app.get('/', function(req, res, next) {
 var structs_path = "datas/struct/";
 
 var id = 1;
-var io_root = io.of("/");
 
-io_root.on('connection', function(socket) {
-	var user_id = id.toString(16);
+io.on('connection', function(socket) {
+	var room_id;
+	var filename;
 
-	fs.writeFileSync(structs_path + user_id + ".json", '{"name": "Retard au travail", "children": [ {"name": "salut", "children": [] } ]}', function(err) {
-		if (err) throw err;
-		console.log("File created");
-	});
-
-	// Just to avoid creating too much .json files
-	// let's stick to one unique id
-	// ++id;
-
-	app.get('/' + user_id, function(req, res, nest) {
-		res.render('app');
-	});
-
-	app.get('/html-' + user_id, function(req, res, nest) {
-		res.render('app-html');
-	});
-
-	console.log("manager connect to /" + user_id);
-
-	var app_io = io.of("/" + user_id);
-
-	app_io.on('connection', function(socket_app) {
-		console.log("app connected to /" + user_id);
-
-		socket_app.emit("get id", {"id": "Hello on /" + user_id});
-//		socket_app.emit("update data", get_data(structs_path + user_id + ".json"));
-
-		socket_app.on("get data", function() {
-			socket_app.emit("get data", get_data(structs_path + user_id + ".json"));
-		});
-
-		socket_app.on("update data", function() {
-			console.log("arrived to");
-			socket_app.emit("update data", get_data(structs_path + user_id + ".json"));
-		});
-
-		socket_app.on('disconnect', function() {
-			console.log("app disconnected from /" + user_id);
-			socket.emit("app disconnected", {"id": "/" + user_id});
-		});
-	});
-
-	socket.emit("get id", {"id": user_id});
-
-	update_data(socket, structs_path + user_id + ".json");
-
-	socket.on("add bubble", function(data) {
-		var struct = get_data(structs_path + user_id + ".json");
-		if (struct == null || struct == undefined) {
-			console.log("Should not come here");
-			return;
-		}
-		var node = findNode(data.parent, struct);
-		if (node == null) {
-			console.log("Error in fs.readFile(" + structs_path + user_id + ".json), '" + data.parent + "' doesn't exist");
-		} else {
-			node.children.push(data.bubble);
-			fs.writeFileSync(structs_path + user_id + ".json", JSON.stringify(struct), function(err) {
-				if (err) throw err;
+	socket.on('get_room_id', function(client) {
+		console.log("on('get_room_id')", client);
+		if (client === "manager") {
+			room_id = id.toString(16);
+			++id;
+			socket.emit("get_room_id", room_id);
+			app.get('/' + room_id, function(req, res, nest) {
+				res.render('app-html');
 			});
-			socket.emit("update data", struct);
 		}
 	});
 
-	socket.on("add category", function(data) {
-		var struct = JSON.parse(fs.readFileSync(structs_path + user_id + ".json"));
-		if (struct == null || struct == undefined) {
-			console.log("Should not come here");
+	// client {"client": "manager/app", "room_id": "room_id"}
+	socket.on('room', function(client) {
+		console.log("on('room')", client);
+		if (client.client === "app")
+			room_id = client.room_id;
+		else if (client.client !== "manager")
+			console.log("Error, socket.on('room')");
+		filename = structs_path + room_id + ".json";
+		if (client.client == "manager")
+			write_data(filename, {"name": "Retard au travail", "children": []});
+		socket.join(room_id);
+	});
+
+	socket.on('bubble/interest/add', function(new_interest) {
+		console.log("bubble/interest/add");
+		var datas = get_data(filename);
+		if (datas == null || datas == undefined) {
+			console.log("Error, socket.on('add_category')");
 			return;
 		}
-		struct.children.push({"name": data.name, "children": []});
-		fs.writeFileSync(structs_path + user_id + ".json", JSON.stringify(struct), function(err) {
-			if (err) throw err;
-			struct = JSON.parse(struct);
-			var node = findNode(data.parent, struct);
-			if (node == null) {
-				console.log("Error in fs.readFile(" + structs_path + user_id + ".json), '" + data.parent + "' doesn't exist");
-			} else {
-				node.children.push(data.bubble);
-				fs.writeFile(structs_path + user_id + ".json", JSON.stringify(struct), function(err) {
-					if (err) throw err;
-
-					update_data(socket, structs_path + user_id + ".json");
-				});
-			}
-		});
-		socket.emit("update data", struct);
-		console.log("to");
-		io.to("/" + user_id).emit("update data");
+		if (find_interest(new_interest.name, datas) != null) {
+			console.log("Error, " + new_interest.name + " already exist");
+			return;
+		}
+		datas.children.push({"name": new_interest.name, "children": []});
+		write_data(filename, datas);
+		io.to(room_id).emit("new_data");
+		console.log("ICI");
+		io.to(room_id).emit("bubble/add", {"type": "interest", "bubble": new_interest});
 	});
 
-	socket.on('disconnect', function() {
-		console.log("manager disconnect from /" + user_id);
+	socket.on("bubble/word/add", function(new_word) {
+		console.log("bubble/word/add");
+		console.log('new_word', new_word);
+		var datas = get_data(filename);
+		if (datas == null || datas == undefined) {
+			console.log("Error, socket.on('add_bubble')");
+			return;
+		}
+		var node = find_interest(new_word.interest, datas);
+		if (node === null) {
+			console.log("Error, socket.on('bubble/word/add'), " + new_bubble.interest + " doesn't exist");
+			return;
+		}
+		console.log("node", node);
+		for (child in node.children) {
+			console.log(node.children[child]);
+			if (node.children[child].name === new_word.name)
+				return;
+		}
+		node.children.push(new_word);
+		write_data(filename, datas);
+		io.to(room_id).emit("bubble/add", {"type": "word", "bubble": new_word});
 	});
 
+	socket.on("bubble/content/add", function(new_content) {
+		console.log("bubble/content/add");
+		var datas = get_data(filename);
+		if (datas == null || datas == undefined) {
+			console.log("Error, socket.on('bubble/content/add')");
+			return;
+		}
+		var node = find_word(new_content.interest, new_content.word.name, datas);
+		if (node == null) {
+			console.log("Error, socket.on('bubble/content/add'), doesn't exist");
+			return;
+		}
+		node.children.push(new_word.word);
+		write_data(filename, datas);
+		io.to(room_id).emit("bubble/add", {"type": "content", "bubble": new_content});
+	});
+	
+	socket.on('get_data', function() {
+		console.log("on('get_data')");
+		socket.emit('get_data', get_data(filename));
+	});
+
+	socket.on('bubble/remove', function(bubble) {
+		if (bubble.type == "word") {
+			remove_word(bubble);
+		} else if (bubble.type == "content") {
+			remove_content(bubble);
+		} else if (bubble.type == "interest") {
+			remove_interest(bubble);
+			io.to(room_id).emit("new_data");
+		}
+	});
 });
 
 server.listen(3000);
 
-function findNode(name, currentNode) {
-	var result = null;
-	if (name === currentNode.name) {
-		return currentNode;
-	} else if (currentNode.hasOwnProperty('children')) {
-		currentNode.children.forEach(function(currentChild) {
-			if (result == null)
-				result = findNode(name, currentChild);
-		});
-	}
-	return result;
+function remove_word(word) {
+	
+}
+
+function remove_content(content) {
+	
+}
+
+function remove_interest(interest) {
+	
+}
+
+
+function find_interest(interest_name, topic) {
+	for (child in topic.children)
+		if (topic.children[child].name == interest_name)
+			return topic.children[child];
+	return null;
+}
+
+function find_word(interest_name, word_name, currentNode) {
+	var interest = find_interest(interest_name, currentNode);
+	if (interest == null)
+		return null;
+	for (child in interest.children)
+		if (interest.children[child].name == word_name)
+			return interest.children[child].name;
+	return null;
 }
 
 function update_data(socket, filename) {
@@ -146,4 +167,10 @@ function update_data(socket, filename) {
 
 function get_data(filename) {
 	return JSON.parse(fs.readFileSync(filename, "utf8"));
+}
+
+function write_data(filename, datas) {
+	fs.writeFileSync(filename, JSON.stringify(datas), function(err) {
+		if (err) throw err;
+	});
 }

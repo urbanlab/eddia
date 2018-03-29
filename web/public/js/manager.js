@@ -1,56 +1,45 @@
 var socket = io();
 
-var id;
-var data = null;
+var room_id;
 
-socket.on("get id", function(data) {
-	console.log(data.id);
-	id = data.id;
+socket.emit('get_room_id', "manager");
+
+socket.on('get_room_id', function(new_room_id) {
+	room_id = new_room_id;
+	socket.emit('room', {"client": "manager", "room_id": room_id});
 	var host = window.location.origin;
-	document.getElementById("link_app").href = host + "/" + data.id;
+	document.getElementById('link_app').href = host + "/" + room_id;
 });
 
-socket.on("update data", function(new_data) {
-	data = new_data;
-	update_list();
+socket.on('new_data', function() {
+	socket.emit('get_data');
 });
 
-socket.on("app disconnected", function(data) {
-	console.log("app disconnected : " + data.id);
+socket.on('get_data', function(datas) {
+	update_select(datas);
 });
 
-
-socket.on("get data", function(new_data) {
-	data = new_data;
-	update_list();
-});
-
-function update_list() {
-	var p_bubble = document.getElementById("parent_bubble");
-	while (p_bubble.firstChild)
-		p_bubble.removeChild(p_bubble.firstChild);
-	if (data) {
-		console.log("LALALA", data);
-		for (var child in data.children) {
-			console.log("child", child);
-			var opt = document.createElement("option");
-			opt.text = data.children[child].name;
-			p_bubble.add(opt);
-		}
+function update_select(datas) {
+	var interests = document.getElementById("word_interest");
+	while (interests.firstChild)
+		interests.removeChild(interests.firstChild);
+	for (var child in datas.children) {
+		var opt = document.createElement("option");
+		opt.text = datas.children[child].name;
+		interests.add(opt);
 	}
 }
 
-function add_bubble() {
-	var inputs = document.querySelectorAll("#add_bubble input");
-	var parent_bubble = document.querySelectorAll("#add_bubble select")[0];
-	parent_bubble = parent_bubble.options[parent_bubble.selectedIndex].text;
-	var name = inputs[0].value;
-	var size = inputs[1].value;
-	socket.emit("add bubble", {"parent": parent_bubble, "bubble": {"name": name, "size": size}});
+function add_word() {
+	var interest = document.getElementById("word_interest");
+	interest = interest.options[interest.selectedIndex].text;
+	var name = document.getElementById("word_name").value;
+	var size = document.getElementById("word_size").value;
+	socket.emit("bubble/word/add", {"interest": interest, "name": name /*, "size": size*/ });
 };
 
-function add_category() {
-	var name = document.getElementById("name_category").value;
-	socket.emit("add category", {"name": name});
-	socket.emit("get data", ""); 
+function add_interest() {
+	var name = document.getElementById("interest_name").value;
+	socket.emit("bubble/interest/add", {"name": name});
+	socket.emit("get data"); 
 }
