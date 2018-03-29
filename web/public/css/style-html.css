@@ -164,9 +164,9 @@
   font-size:24px;
   z-index:100;
   padding:20px;
-  transition:all 1000ms ease;
+  /* transition:all 1000ms ease; */
 }
-
+/*
 .screen[data-eye-side="top"] .bubble-inner {
   transform: rotate(180deg);
 }
@@ -182,6 +182,7 @@
 .screen[data-eye-side="right"] .bubble-inner {
   transform: rotate(-90deg);
 }
+*/
 
 
 

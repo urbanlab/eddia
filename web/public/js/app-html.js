@@ -118,16 +118,18 @@ function init() {
   createBubble('word', { name: 'Transports 1', interest: 'Transports' });
   createBubble('word', { name: 'Transports 2', interest: 'Transports' });
   createBubble('word', { name: 'Transports 3', interest: 'Transports' });
-  createBubble('word', { name: 'Transports 1', interest: 'Transports' });
-  createBubble('word', { name: 'Transports 3', interest: 'Transports' });
-  createBubble('word', { name: 'Transports 1', interest: 'Transports' });
-  createBubble('word', { name: 'Transports 2', interest: 'Transports' });
-  createBubble('word', { name: 'Transports 3', interest: 'Transports' });
+  createBubble('word', { name: 'Transports 4', interest: 'Transports' });
+  createBubble('word', { name: 'Transports 5', interest: 'Transports' });
+  createBubble('word', { name: 'Transports 6', interest: 'Transports' });
+  createBubble('word', { name: 'Transports 7', interest: 'Transports' });
+  createBubble('word', { name: 'Transports 8', interest: 'Transports' });
 
   createBubble('word', { name: 'Imprévu 1sfsfsef', interest: 'Imprévus internes' });
   createBubble('word', { name: 'Imprévu 2 sdfds fdsfd sds dsfdsf', interest: 'Imprévus internes' });
   createBubble('word', { name: 'Imprévu sdf dsf dsf dsf ds f sd fd3', interest: 'Imprévus internes' });
 
+  createBubble('content', { type: 'quote', word: 'Transports 1', content: 'Lorem ipsum dolor sit amet lorem ipsum' });
+  createBubble('content', { type: 'image', word: 'Transports 2', content: 'Texte de loi n°2', file: 'photo1.jpg' });
 
   setTimeout(function(){
     createBubble('interest', { name: 'Imprévus internes' });
@@ -166,8 +168,6 @@ function changeBubbleSize(mode, d) {
 }
 
 function setView(v, d = null) {
-  console.log('setView : '+v);
-
   if (v == 'topic') {
     $('.bubble--interest').removeClass('current');
     $('.bubble--word').removeClass('related');
@@ -176,7 +176,6 @@ function setView(v, d = null) {
     //   .css({
     //     'transform': 'translate('+(screenW/2)+'px, '+(screenH/2)+'px)'
     //   });
-
 
     $('.bubble--word').each(function(){
       var interestBubbleParent = $('.bubble--interest[data-name="' + $(this).data('interest') + '"]');
@@ -222,6 +221,14 @@ function setView(v, d = null) {
     DOM_screen.attr('data-view','interest');
   }
 
+  if (v == 'word') {
+    var interestBubble = $('.bubble--interest[data-name="'+d.interest+'"]');
+    var wordBubble = $('.bubble--word[data-name="'+d.name+'"]');
+
+    console.log(interestBubble);
+    console.log(wordBubble);
+  }
+
   updateView();
 }
 
@@ -245,16 +252,25 @@ function createBubble(_type, d) {
           setView('interest', { name: d.name });
         }
       }
+
+      if (type == 'word') {
+        if ($(this).hasClass('current')) {
+          setView('interest', { name: d.interest });
+        } else {
+          setView('word', { name: d.name, interest: d.interest });
+        }
+      }
     });
 
   if (type == 'word') {
     var placeholderIndex = $('.bubble--word[data-interest="'+d.interest+'"]').length || 0;
-    console.log(placeholderIndex, wordPlaceholders.length);
 
     if (placeholderIndex < wordPlaceholders.length) {
+      // Defined position
       var x = wordPlaceholders[placeholderIndex][0];
       var y = wordPlaceholders[placeholderIndex][1];
     } else {
+      // Then random positions
       if (Math.random() >= 0.5) {
         var x = (Math.random() * 500) + 100;
       } else {
@@ -270,6 +286,7 @@ function createBubble(_type, d) {
       .data('x', x)
       .data('y', y)
       .data('scale', 1)
+      .data('rotation', 0)
       .attr('data-interest',d.interest);
 
     DOM_bubble
@@ -282,6 +299,7 @@ function createBubble(_type, d) {
 
       .on('pinch pan', function(event) {
 //        $('.console').text(event.type);
+        console.log(event);
 
         var target = event.target;
 
@@ -290,6 +308,7 @@ function createBubble(_type, d) {
         var currentScale = $(target).data('scale') * event.gesture.scale;
         var currentDeltaX = $(target).data('x') + (event.gesture.deltaX);
         var currentDeltaY = $(target).data('y') + (event.gesture.deltaY);
+        var currentRotation = $(target).data('rotation') + (event.gesture.rotation);
 
         $(target).css({
           'transform': 'translate(' + currentDeltaX + 'px,' + currentDeltaY + 'px)'
@@ -297,6 +316,10 @@ function createBubble(_type, d) {
 
         $(target).find('.bubble-scale').css({
           'transform':'scale('+currentScale+')'
+        });
+
+        $(target).find('.bubble-inner').css({
+          'transform':'rotate('+currentRotation+'deg)'
         });
       })
 
@@ -308,6 +331,7 @@ function createBubble(_type, d) {
         $(target).data('scale', ($(target).data('scale') * event.gesture.scale));
         $(target).data('x', ($(target).data('x') + (event.gesture.deltaX)));
         $(target).data('y', ($(target).data('y') + (event.gesture.deltaY)));
+        $(target).data('rotation', ($(target).data('rotation') + (event.gesture.rotation)));
       });
   }
 
