@@ -8,6 +8,8 @@ var maxBubbleScale = 3;
 var lastView = 'topic',
     currentView = 'topic';
 
+var defaultRotation = 90;
+
 var wordPlaceholders = [
   [ 540, 540 ],
   [ 1400, 540 ],
@@ -69,6 +71,10 @@ function init(datas) {
 	       createBubble('word', {"name": datas.children[child].children[word].name, "interest": datas.children[child].name});
       }
   }
+
+  createBubble('content', { type: 'quote', word: 'Truc', content: 'Lorem ipsum dolor sit amet lorem ipsum' });
+  createBubble('content', { type: 'image', word: 'Truc', content: 'Texte de loi n°2', file: '/img/photo1.jpg' });
+
   /*createBubble('interest', { name: 'Transports' });
   createBubble('interest', { name: 'Imprévus externes' });
 
@@ -89,9 +95,6 @@ function init(datas) {
   createBubble('word', { name: 'Imprévu 2 sdfds fdsfd sds dsfdsf', interest: 'Imprévus internes' });
   createBubble('word', { name: 'Imprévu sdf dsf dsf dsf ds f sd fd3', interest: 'Imprévus internes' });
 
-  createBubble('content', { type: 'quote', word: 'Transports 1', content: 'Lorem ipsum dolor sit amet lorem ipsum' });
-  createBubble('content', { type: 'image', word: 'Transports 2', content: 'Texte de loi n°2', file: 'photo1.jpg' });
-
   setTimeout(function(){
     createBubble('interest', { name: 'Imprévus internes' });
   }, 1500);
@@ -108,7 +111,27 @@ function init(datas) {
 
 function setEye(side) {
   DOM_screen.attr('data-eye-side', side);
+
+  var sides = {
+    'bottom': 0,
+    'left': 90,
+    'right': -90,
+    'top': 180
+  };
+
+  defaultRotation = sides[side];
+
+  $('.bubble-inner, .bubble-thumbnail')
+    .css({
+      transform: 'rotate('+defaultRotation+'deg)'
+    });
+
+  $('.bubble--word')
+    .data('rotation', defaultRotation);
 }
+
+
+
 
 function changeBubbleSize(mode, d) {
   var changeDiff = .1;
@@ -154,6 +177,7 @@ function setView(v, d = null) {
   if (v == 'topic') {
     $('.bubble--interest').removeClass('current');
     $('.bubble--word').removeClass('related current no-transition'); // flickr because of no-transition: deletable TODO
+    $('.bubble--content').removeClass('related current');
 
     // $('.bubble--word')
     //   .css({
@@ -179,6 +203,7 @@ function setView(v, d = null) {
     interestBubble.addClass('current');
 
     $('.bubble--word').removeClass('current related');
+    $('.bubble--content').removeClass('related current');
 
     if (lastView != 'word') {
       // Set initial wordBubble position to parent interestBubble
@@ -210,19 +235,44 @@ function setView(v, d = null) {
     var wordBubble = $('.bubble--word[data-name="'+d.name+'"]');
 
     $('.bubble--interest').removeClass('current');
-    interestBubble.addClass('current');
-
     $('.bubble--word').removeClass('current');
+    $('.bubble--content').removeClass('related current');
+
+    interestBubble.addClass('current');
     wordBubble.addClass('current');
 
-    console.log(interestBubble);
-    console.log(wordBubble);
+    if (lastView != 'xxx') {
+      // Set initial wordBubble position to parent interestBubble
+      $('.bubble--content[data-word="'+d.name+'"]')
+        .addClass('no-transition')
+        .css({
+          'transform': 'translate('+(wordBubble.data('x'))+'px, '+(wordBubble.data('y'))+'px)'
+        });
+
+      // Then animate transition from interestBubble position to wordBubble position
+      setTimeout(function(){
+        $('.bubble--content[data-word="'+d.name+'"]').each(function(){
+          $(this)
+            .addClass('related')
+            .removeClass('no-transition')
+            .css({
+              'transform': 'translate('+$(this).data('x')+'px, '+$(this).data('y')+'px)'
+            });
+        });
+      },100);
+    } else {
+      $('.bubble--content[data-word="'+d.name+'"]')
+        .addClass('related');
+    }
   }
 
   DOM_screen.attr('data-view',currentView);
 
   updateView();
 }
+
+
+
 
 function createBubble(_type, d) {
   var type = _type;
@@ -232,6 +282,7 @@ function createBubble(_type, d) {
     .attr('data-name', d.name)
     .attr('data-type', type)
     .data('scale', 1)
+
     .on('click', function(){
       if (type == 'topic') {
         setView('topic');
@@ -252,7 +303,23 @@ function createBubble(_type, d) {
           setView('word', { name: d.name, interest: d.interest });
         }
       }
+
+      if (type == 'content') {
+        if (d.type == 'image') {
+          if ($(this).hasClass('current')) {
+            hideContentImage($(this));
+          } else {
+            showContentImage($(this));
+          }
+        }
+      }
     });
+
+  if (type == 'content') {
+    DOM_bubble
+      .attr('data-word', d.word)
+      .attr('data-interet', d.interet)
+  }
 
   if (type == 'word') {
     var placeholderIndex = $('.bubble--word[data-interest="'+d.interest+'"]').length || 0;
@@ -278,7 +345,7 @@ function createBubble(_type, d) {
       .data('x', x)
       .data('y', y)
       .data('scale', 1)
-      .data('rotation', 0)
+      .data('rotation', defaultRotation)
       .attr('data-interest',d.interest);
 
 
@@ -290,9 +357,17 @@ function createBubble(_type, d) {
         ]
       })
 
-      .on('pinchstart', function(event) {
+      .on('panstart pinchstart', function(event) {
         var target = event.target;
-        $(target).data('startrotation', event.gesture.rotation);
+
+        if (event.type == 'pinchstart') {
+          $(target).data('startrotation', event.gesture.rotation);
+        }
+
+        if ($(target).hasClass('bubble--word') && $(target).hasClass('current')) {
+          $(target).removeClass('current');
+          setView('interest', { name: $(target).data('interest') });
+        }
       })
 
       .on('pinch pan', function(event) {
@@ -329,7 +404,7 @@ function createBubble(_type, d) {
       .on('panend pinchend', function(event) {
         var target = event.target;
 
-        // Avoid pinchend flickering (because of these two fingers)
+        // Avoid pinchend flickering (because of these two fingers crashing the final position)
         if (event.type != "pinchend") {
           $(target).data('x', $(target).data('lastx'));
           $(target).data('y', $(target).data('lasty'));
@@ -356,14 +431,34 @@ function createBubble(_type, d) {
   var DOM_bubbleScale = $('<div/>')
     .addClass('bubble-scale');
 
+  if (type == 'content') {
+    if (d.type == 'image') {
+      var DOM_bubbleImage = $('<div/>')
+        .addClass('bubble-thumbnail')
+        .css({
+          'background-image':'url('+d.file+')',
+          transform: 'rotate('+defaultRotation+'deg)'
+        });
+
+      DOM_bubbleScale
+        .append(DOM_bubbleImage);
+    }
+  }
+
   var DOM_bubbleBackground = $('<div/>')
     .addClass('bubble-background');
+
+  var DOM_bubbleBackgroundLayer1Wrapper = $('<div/>')
+    .addClass('bubble-background-layer-wrapper bubble-background-layer-wrapper-1');
 
   var DOM_bubbleBackgroundLayer1 = $('<div/>')
     .addClass('bubble-background-layer bubble-background-layer-1')
     .css({
       'animation-delay': - parseInt(Math.random() * 10) +'s'
     });
+
+  var DOM_bubbleBackgroundLayer2Wrapper = $('<div/>')
+    .addClass('bubble-background-layer-wrapper bubble-background-layer-wrapper-2');
 
   var DOM_bubbleBackgroundLayer2 = $('<div/>')
     .addClass('bubble-background-layer bubble-background-layer-2')
@@ -373,11 +468,20 @@ function createBubble(_type, d) {
 
   var DOM_bubbleInner = $('<div/>')
     .addClass('bubble-inner')
+    .css({
+      transform: 'rotate('+defaultRotation+'deg)'
+    })
     .text(d.name);
 
-  DOM_bubbleBackground
-    .append(DOM_bubbleBackgroundLayer1)
+  DOM_bubbleBackgroundLayer1Wrapper
+    .append(DOM_bubbleBackgroundLayer1);
+
+  DOM_bubbleBackgroundLayer2Wrapper
     .append(DOM_bubbleBackgroundLayer2);
+
+  DOM_bubbleBackground
+    .append(DOM_bubbleBackgroundLayer1Wrapper)
+    .append(DOM_bubbleBackgroundLayer2Wrapper);
 
   DOM_bubbleScale
     .append(DOM_bubbleBackground)
@@ -399,22 +503,29 @@ function createBubble(_type, d) {
 }
 
 function updateView() {
-  console.log('updateView');
-  var view = DOM_screen.attr('data-view');
-
-  if (view == 'topic') {
+  if (currentView == 'topic') {
     setPositionOfInterestBubblesInTopicView();
   }
 
-  if (view == 'interest') {
+  if (currentView == 'interest') {
     setPositionOfInterestBubblesInInterestView();
-    setWordBubblesDraggable();
   }
 
-  if (view == 'word') {
+  if (currentView == 'word') {
+    setPositionOfContentBubblesInWordView();
   }
 }
 
+
+
+function showContentImage(b) {
+  console.log('showContentImage');
+  b.addClass('current');
+}
+
+function hideContentImage(b) {
+  b.removeClass('current');
+}
 
 
 function removeBubble(b) {
@@ -441,12 +552,35 @@ function removeBubble(b) {
 
 
 
-function setWordBubblesDraggable() {
+function setPositionOfContentBubblesInWordView() {
+  var radius = 250;
+  var angleOffset = 90;
 
-  /*$('.layer--word .bubble--word').draggable({
+  $('.bubble--word').each(function(){
+    var wordName = $(this).data('name');
+    var word = $('.bubble--word[data-name="'+wordName+'"]');
 
+    var contentBubbles = $('.bubble--content[data-word="'+wordName+'"]');
+    var nbContentBubbles = contentBubbles.length;
+
+    var angleMin = 360 * 0.0174532925 / nbContentBubbles;
+
+    for (var i = 0; i < nbContentBubbles; i++) {
+      var contentBubble = contentBubbles.eq(i);
+
+      if (!contentBubble.hasClass('current')) {
+        var x = (radius * Math.cos(angleMin * i + angleOffset) + word.data('x'));
+        var y = (radius * Math.sin(angleMin * i + angleOffset) + word.data('y'));
+
+        contentBubble
+          .data('x', x)
+          .data('y', y)
+          .css({
+            transform: 'translate(' + x + 'px, ' + y + 'px)'
+          });
+      }
+    }
   });
-  */
 }
 
 
