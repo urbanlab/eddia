@@ -4,6 +4,9 @@
   <meta charset="utf-8">
   <title>EDDIA</title>
   <link rel='stylesheet' href='/css/style-html.css'>
+  <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi">
+
+
 </head>
 <body>
   <div class="screen">
@@ -11,14 +14,35 @@
 
     <div class="layer layer--topic"></div>
     <div class="layer layer--interest"></div>
-    <div class="layer layer--words"></div>
+    <div class="layer layer--word"></div>
+
+    <div class="eyes">
+      <div class="eye eye-top" data-side="top"></div>
+      <div class="eye eye-left" data-side="left"></div>
+      <div class="eye eye-bottom" data-side="bottom"></div>
+      <div class="eye eye-right" data-side="right"></div>
+    </div>
 
   </div>
+
+  <div style="position:absolute;top:0;right:0;width:50px;height:50px;" onclick="window.location.reload()"></div>
+
+  <div style="position:absolute;top:0;left:0;color:white;font-size:26px" class="console"></div>
+
   <script
   src="https://code.jquery.com/jquery-3.3.1.min.js"
   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
   crossorigin="anonymous"></script>
+
+  <script
+  src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+  integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+  crossorigin="anonymous"></script>
+
   <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/hammer.min.js"></script>
+  <script src="/js/jquery.hammer.js"></script>
+  <script src="/js/jquery.ui.touch-punch.min.js"></script>
   <!-- <script src="/js/jquery.easing.1.3.js"></script> -->
   <script src="/js/app-html.js"></script>
 </body>
