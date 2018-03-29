@@ -1,8 +1,9 @@
-
 var DOM_screen = $('.screen'),
     DOM_screenBackground = $('.screen-background'),
     screenW = DOM_screen.width(),
     screenH = DOM_screen.height();
+
+var maxBubbleScale = 3;
 
 var wordPlaceholders = [
   [ 540, 540 ],
@@ -19,6 +20,7 @@ var wordPlaceholders = [
 
 
 window.onload = function () {
+  // Disable right click
 	document.addEventListener('contextmenu', event => event.preventDefault());
 
 	var url_array = document.location.pathname.split('/');
@@ -26,18 +28,21 @@ window.onload = function () {
 	var socket = io();
 	var once = 1;
 
-	socket.emit('room', {"client": "app", "room_id": room});
-	socket.emit('get_data');
+	socket.emit('room', {
+    "client": "app",
+    "room_id": room
+  });
+
+  socket.emit('get_data');
 
 	socket.on('get_data', function(datas) {
 		init(datas);
 	});
- 
+
 	socket.on('bubble/add', function(bubble) {
 		console.log("on('bubble/add')", bubble);
 		createBubble(bubble.type, bubble.bubble);
-        });
-	
+  });
 }
 
 function init(datas) {
@@ -54,11 +59,11 @@ function init(datas) {
 
 	// A enlever le topic mis en dur
   createBubble('topic', { name: datas.name });
-  
+
   for (child in datas.children) {
     createBubble('interest', {"name": datas.children[child].name});
       for (word in datas.children[child].children) {
-	createBubble('word', {"name": datas.children[child].children[word].name, "interest": datas.children[child].name});
+	       createBubble('word', {"name": datas.children[child].children[word].name, "interest": datas.children[child].name});
       }
   }
   /*createBubble('interest', { name: 'Transports' });
@@ -117,14 +122,14 @@ function changeBubbleSize(mode, d) {
   bubble
     .data('scale', newScale)
     .find('.bubble-scale').css({
-      transform: 'scale('+newScale+')'
+      transform: 'scale('+Math.min(newScale, maxBubbleScale)+')'
     });
 }
 
 function setView(v, d = null) {
   if (v == 'topic') {
     $('.bubble--interest').removeClass('current');
-    $('.bubble--word').removeClass('related current');
+    $('.bubble--word').removeClass('related current no-transition'); // flickr because of no-transition: deletable TODO
 
     // $('.bubble--word')
     //   .css({
@@ -214,11 +219,11 @@ function createBubble(_type, d) {
       }
 
       if (type == 'word') {
-        if ($(this).hasClass('current')) {
-          setView('interest', { name: d.interest });
-        } else {
-          setView('word', { name: d.name, interest: d.interest });
-        }
+        // if ($(this).hasClass('current')) {
+        //   setView('interest', { name: d.interest });
+        // } else {
+        //   setView('word', { name: d.name, interest: d.interest });
+        // }
       }
     });
 
@@ -249,6 +254,7 @@ function createBubble(_type, d) {
       .data('rotation', 0)
       .attr('data-interest',d.interest);
 
+
     DOM_bubble
       .hammer({
         recognizers: [
@@ -257,53 +263,63 @@ function createBubble(_type, d) {
         ]
       })
 
-      .on('pinch pan', function(event) {
-//        $('.console').text(event.type);
-        console.log(event);
+      .on('pinchstart', function(event) {
+        var target = event.target;
+        $(target).data('startrotation', event.gesture.rotation);
+      })
 
+      .on('pinch pan', function(event) {
         var target = event.target;
 
         $(target).addClass('no-transition');
 
-        var currentScale = $(target).data('scale') * event.gesture.scale;
         var currentDeltaX = $(target).data('x') + (event.gesture.deltaX);
         var currentDeltaY = $(target).data('y') + (event.gesture.deltaY);
-        var currentRotation = $(target).data('rotation') + (event.gesture.rotation);
 
-        if (currentRotation > 360) {
-          currentRotation = currentRotation - 360;
-        }
-
-        if (currentRotation < 0) {
-          currentRotation = 360 + currentRotation;
-        }
-
-        $('.console').text($('.console').text() + '\r\npinch pan : '+currentRotation);
+        $(target).data('lastx', currentDeltaX);
+        $(target).data('lasty', currentDeltaY);
 
         $(target).css({
           'transform': 'translate(' + currentDeltaX + 'px,' + currentDeltaY + 'px)'
         });
 
-        $(target).find('.bubble-scale').css({
-          'transform':'scale('+currentScale+')'
-        });
+        if (event.type == 'pinch') {
+          var currentScale = Math.min($(target).data('scale') * event.gesture.scale, maxBubbleScale);
 
-        $(target).find('.bubble-inner').css({
-          'transform':'rotate('+currentRotation+'deg)'
-        });
+          var diff = $(target).data('startrotation') - event.gesture.rotation;
+          var currentRotation = $(target).data('rotation') - diff;
+
+          $(target).find('.bubble-scale').css({
+            'transform':'scale('+currentScale+')'
+          });
+
+          $(target).find('.bubble-inner').css({
+            'transform':'rotate('+currentRotation+'deg)'
+          });
+        }
       })
 
       .on('panend pinchend', function(event) {
         var target = event.target;
 
-        $(target).removeClass('no-transition');
+        // Avoid pinchend flickering (because of these two fingers)
+        if (event.type != "pinchend") {
+          $(target).data('x', $(target).data('lastx'));
+          $(target).data('y', $(target).data('lasty'));
+        }
 
-      //   $('.console').text(($(target).data('rotation')));
+        // Only with a pinch
+        if (event.type == 'pinchend') {
+          var diff = $(target).data('startrotation') - event.gesture.rotation;
+          var currentRotation = $(target).data('rotation') - diff;
 
-        $(target).data('scale', ($(target).data('scale') * event.gesture.scale));
-        $(target).data('x', ($(target).data('x') + (event.gesture.deltaX)));
-        $(target).data('y', ($(target).data('y') + (event.gesture.deltaY)));
-        $(target).data('rotation', ($(target).data('rotation') + (event.gesture.rotation)));
+          $(target).data('scale', ($(target).data('scale') * event.gesture.scale));
+          $(target).data('rotation', currentRotation);
+        }
+
+        setTimeout(function(){
+          $(target).removeClass('no-transition');
+        },100);
       });
   }
 
