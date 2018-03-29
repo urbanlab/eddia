@@ -4,46 +4,6 @@ var DOM_screen = $('.screen'),
     screenW = DOM_screen.width(),
     screenH = DOM_screen.height();
 
-var DATA;
-// Si tu veux utiliser les DATA en dur comme ca
-// Decommente ca
-
-DATA = {
- "name": "Retard au travail",
- "children": [
-	 {
-		 "name": "Transports",
-		 "children": [
-			{"name": "Mot lié à Transport"},
-			{"name": "Autre mot lié à Transport"},
-			{"name": "Encore un mot lié à Transport"}
-		 ]
-	 },
-	 {
-		 "name": "Imprévus externes",
-		 "children": [
-			{"name": "Mot lié à Imprévus externes"},
-			{"name": "Autre mot lié à Imprévus externes"}
-		 ]
-	 },
-	 {
-		 "name": "Imprévus personnels",
-		 "children": [
-			{"name": "Mot lié à Imprévus personnels"},
-			{"name": "Autre mot lié à Imprévus personnels"},
-			{"name": "Tiens, un mot lié à Imprévus personnels"},
-			{"name": "Nouveau mot lié à Imprévus personnels"},
-		 ]
-	 },
- ]
-};
-
-var svgPaths = [
-	'M49.5-16.2c-0.2-1.1-0.6-2.2-0.9-3.3c0-0.1,0-0.3-0.1-0.4c-0.2-0.7-0.5-1.4-0.7-2c-0.2-0.4-0.4-0.8-0.6-1.2 c-1.3-2.7-3.2-5-5.6-6.8c-2.6-2-13.5-9.7-17-10.9c-2.5-0.8-4.9-1.8-7.3-2.9c-3-1.4-5.9-2.7-8.9-4c-3.8-1.6-7.8-2.4-12-2.2 c-2.3,0.2-4.5,0.6-6.6,1.2c-0.9,0.3-1.8,0.6-2.8,0.9c-0.1,0-0.2,0-0.3,0c-1.1,0.4-2.2,0.8-3.2,1.2c-0.6,0.2-1.1,0.5-1.7,0.7 c-2.9,1.1-5.7,2.3-8.5,3.7c-5.2,2.8-9.3,6.8-12.1,12c-2,3.7-3.7,7.6-5.5,11.4c-1.5,3.2-2.8,6.4-3.8,9.8c-1.2,4.1-2,8.2-1.7,12.5 c0.2,3.4,1,6.6,2.3,9.7c3,7.1,8.1,12.2,14.6,16.2c3.3,2,6.8,3.8,10.3,5.4c4.7,2.1,9.1,4.7,13.6,7.1c4,2.2,8.1,4.3,12.4,5.9 c3.4,1.2,6.9,2.1,10.6,2.1c2,0,4-0.2,6-0.8c0.1,0,0.2,0,0.2,0c0.5-0.2,1-0.4,1.5-0.5c0.3-0.2,0.7-0.3,1-0.5c4.1-1.9,7.2-4.9,9.9-8.5 c2.4-3.2,4.4-6.6,6.1-10.3c1.9-4,3.7-8.1,5.5-12.2c1.3-2.8,2.6-5.6,3.8-8.5C49.8,4.6,50.6-11.3,49.5-16.2z',
-	'M48.7-31.6c-0.7-2.1-1.6-4-2.9-5.8c0-0.1-0.1-0.2-0.1-0.2c-0.4-0.5-0.7-0.9-1.1-1.4c-0.3-0.3-0.6-0.6-0.8-0.9 c-3.4-3.5-7.5-5.7-12.1-7.3c-4.1-1.4-8.3-2.3-12.6-2.8c-4.8-0.6-9.6-1-14.4-1.5c-3.3-0.3-6.7-0.7-10-1c-4.9-0.4-9.9-0.3-14.8,0.4 c-5.4,0.8-10.5,2.6-15.2,5.4c-1,0.6-2,1.3-3.1,2c-0.1,0.1-0.3,0.1-0.4,0.2c-0.6,0.5-1.2,1-1.9,1.5c-0.4,0.3-0.7,0.7-1.1,1 c-2.4,2.3-4,5-5.1,8.1c-1.1,3.3-1.6,6.8-1.7,10.3c-0.1,4,0,8,0,12c0,2.8-0.2,5.7-0.5,8.5c-0.4,3.5-0.8,7-1,10.5 c-0.3,4.5,0.2,8.9,1.9,13.1c0.9,2.3,2.1,4.4,3.5,6.4c0.6,0.9,1.2,1.7,1.8,2.5c0.1,0.1,0.1,0.2,0.1,0.3c0.8,1,1.5,1.9,2.3,2.9 c0.4,0.5,0.9,1,1.3,1.5c2.1,2.6,4.3,5.1,6.7,7.4c4.6,4.4,10.1,7.3,16.4,8.3c4.5,0.7,9.1,1.2,13.6,1.8c3.8,0.4,7.6,0.7,11.4,0.6 c4.6-0.1,9.1-0.8,13.4-2.5c3.4-1.3,6.4-3.3,9.2-5.7c6.3-5.5,9.8-12.5,11.6-20.5c1-4.1,1.6-8.3,2.1-12.4c0.6-5.5,1.7-10.9,2.7-16.4 c0.9-4.9,1.7-9.8,1.8-14.7C50.2-23.9,49.9-27.8,48.7-31.6z',
-	'M49.9,10.4c-0.4-3.9-1.3-7.8-2.6-11.5c-1.4-4.2-2.9-8.3-4.3-12.5c-1-2.9-2-5.8-3-8.7c-1.6-4.2-3.5-8.3-6-12 c-2.8-4.1-6.2-7.7-10.3-10.5c-0.9-0.6-1.9-1.2-2.8-1.8c-0.1-0.1-0.2-0.2-0.3-0.2c-0.6-0.3-1.3-0.6-1.9-1c-0.4-0.2-0.8-0.3-1.3-0.5 c-2.8-1.1-5.7-1.4-8.7-1.1C5.3-49,2.3-48-0.7-46.7c-3.3,1.5-6.6,3.1-10,4.6c-2.3,1.1-4.7,2.1-7.2,2.9c-3.1,1-6.1,2.1-9.1,3.2 c-3.8,1.5-7.3,3.6-10.1,6.6c-1.5,1.6-2.8,3.4-3.9,5.3c-0.5,0.8-0.9,1.7-1.4,2.5c0,0.1-0.1,0.1-0.2,0.2c-0.5,1-1,2-1.5,3 c-0.3,0.6-0.5,1.1-0.8,1.7c-1.3,2.7-2.5,5.5-3.5,8.4C-50.2-2.6-50.4,3-48.8,8.7c1.1,4,2.5,8,3.8,11.9c1.1,3.3,2.4,6.5,3.9,9.6 c1.9,3.8,4.2,7.2,7.3,10.1c2.4,2.3,5.2,4.1,8.3,5.4c7,3.1,14.1,3.3,21.5,1.7c3.8-0.8,7.5-1.9,11.1-3.1c4.8-1.6,9.7-2.8,14.6-4.1 c4.4-1.2,8.7-2.4,12.9-4.2c3.3-1.4,6.4-3.2,9-5.6c1.5-1.4,2.7-2.9,3.7-4.6c0-0.1,0.1-0.1,0.2-0.2c0.2-0.5,0.5-0.9,0.7-1.4 c0.1-0.3,0.3-0.7,0.4-1C50.1,19.1,50.3,14.8,49.9,10.4z'
-];
-
 var wordPlaceholders = [
   [ 540, 540 ],
   [ 1400, 540 ],
@@ -59,43 +19,28 @@ var wordPlaceholders = [
 
 
 window.onload = function () {
-  document.addEventListener('contextmenu', event => event.preventDefault());
+	document.addEventListener('contextmenu', event => event.preventDefault());
 
 	var url_array = document.location.pathname.split('/');
 	var room = url_array[1];
-	var socket;
+	var socket = io();
 	var once = 1;
 
-	if (room === "")
-		socket = io();
-	else
-		socket = io("/" + room);
+	socket.emit('room', {"client": "app", "room_id": room});
+	socket.emit('get_data');
 
-	socket.on("get id", function(data) {
-		console.log(data.id);
+	socket.on('get_data', function(datas) {
+		init(datas);
 	});
-/*
-	// Commente ca
-	socket.on("update data", function(data) {
-		console.log("UPDATEDATA");
-		DATA = data;
-	});
-
-	// Et ca
-	socket.emit("get data");
-
-	// Et ca
-	socket.on("get data", function(data) {
-		DATA = data;
-		start();
-	});
-	*/
-
-	// Decommente ca
-	 init();
+ 
+	socket.on('bubble/add', function(bubble) {
+		console.log("on('bubble/add')", bubble);
+		createBubble(bubble.type, bubble.bubble);
+        });
+	
 }
 
-function init() {
+function init(datas) {
  setView('topic');
  setEye('bottom');
 
@@ -107,8 +52,16 @@ function init() {
     setEye($(this).data('side'));
   });
 
-  createBubble('topic', { name: DATA.name });
-  createBubble('interest', { name: 'Transports' });
+	// A enlever le topic mis en dur
+  createBubble('topic', { name: datas.name });
+  
+  for (child in datas.children) {
+    createBubble('interest', {"name": datas.children[child].name});
+      for (word in datas.children[child].children) {
+	createBubble('word', {"name": datas.children[child].children[word].name, "interest": datas.children[child].name});
+      }
+  }
+  /*createBubble('interest', { name: 'Transports' });
   createBubble('interest', { name: 'Imprévus externes' });
 
   createBubble('word', { name: 'Imprévu 1', interest: 'Imprévus externes' });
@@ -134,6 +87,7 @@ function init() {
   setTimeout(function(){
     createBubble('interest', { name: 'Imprévus internes' });
   }, 1500);
+  */
   //
   // setTimeout(function(){
   //   changeBubbleSize('inc', { type: 'interest', name: 'Transports' });
