@@ -5,6 +5,9 @@ var DOM_screen = $('.screen'),
 
 var maxBubbleScale = 3;
 
+var lastView = 'topic',
+    currentView = 'topic';
+
 var wordPlaceholders = [
   [ 540, 540 ],
   [ 1400, 540 ],
@@ -50,7 +53,7 @@ function init(datas) {
  setEye('bottom');
 
   DOM_screenBackground.on('click', function(e){
-    setView('topic');
+    goToPreviousView();
   });
 
   $('.eye').on('click', function(){
@@ -126,7 +129,28 @@ function changeBubbleSize(mode, d) {
     });
 }
 
+
+
+
+function goToPreviousView() {
+  var view = DOM_screen.attr('data-view');
+
+  if (view == 'word') {
+    setView('interest', { name: $('.bubble--interest.current').data('name') });
+  }
+
+  if (view == 'interest') {
+    setView('topic');
+  }
+}
+
+
+
+
 function setView(v, d = null) {
+  lastView = currentView;
+  currentView = v;
+
   if (v == 'topic') {
     $('.bubble--interest').removeClass('current');
     $('.bubble--word').removeClass('related current no-transition'); // flickr because of no-transition: deletable TODO
@@ -146,8 +170,6 @@ function setView(v, d = null) {
         'transform': 'translate(' + interestBubbleParentX + 'px, ' + interestBubbleParentY + 'px)'
       })
     });
-
-    DOM_screen.attr('data-view','topic');
   }
 
   if (v == 'interest') {
@@ -156,28 +178,31 @@ function setView(v, d = null) {
     $('.bubble--interest').removeClass('current');
     interestBubble.addClass('current');
 
-    $('.bubble--word').removeClass('related');
+    $('.bubble--word').removeClass('current related');
 
-    // Set initial wordBubble position to parent interestBubble
-    $('.bubble--word[data-interest="'+d.name+'"]')
-      .addClass('no-transition')
-      .css({
-        'transform': 'translate('+(screenW/2)+'px, '+(screenH/2)+'px)'
-      });
+    if (lastView != 'word') {
+      // Set initial wordBubble position to parent interestBubble
+      $('.bubble--word[data-interest="'+d.name+'"]')
+        .addClass('no-transition')
+        .css({
+          'transform': 'translate('+(screenW/2)+'px, '+(screenH/2)+'px)'
+        });
 
-    // Then animate transition from interestBubble position to wordBubble position
-    setTimeout(function(){
-      $('.bubble--word[data-interest="'+d.name+'"]').each(function(){
-        $(this)
-          .addClass('related')
-          .removeClass('no-transition')
-          .css({
-            'transform': 'translate('+$(this).data('x')+'px, '+$(this).data('y')+'px)'
-          });
-      });
-    },100);
-
-    DOM_screen.attr('data-view','interest');
+      // Then animate transition from interestBubble position to wordBubble position
+      setTimeout(function(){
+        $('.bubble--word[data-interest="'+d.name+'"]').each(function(){
+          $(this)
+            .addClass('related')
+            .removeClass('no-transition')
+            .css({
+              'transform': 'translate('+$(this).data('x')+'px, '+$(this).data('y')+'px)'
+            });
+        });
+      },100);
+    } else {
+      $('.bubble--word[data-interest="'+d.name+'"]')
+        .addClass('related');
+    }
   }
 
   if (v == 'word') {
@@ -193,6 +218,8 @@ function setView(v, d = null) {
     console.log(interestBubble);
     console.log(wordBubble);
   }
+
+  DOM_screen.attr('data-view',currentView);
 
   updateView();
 }
@@ -219,11 +246,11 @@ function createBubble(_type, d) {
       }
 
       if (type == 'word') {
-        // if ($(this).hasClass('current')) {
-        //   setView('interest', { name: d.interest });
-        // } else {
-        //   setView('word', { name: d.name, interest: d.interest });
-        // }
+        if ($(this).hasClass('current')) {
+          setView('interest', { name: d.interest });
+        } else {
+          setView('word', { name: d.name, interest: d.interest });
+        }
       }
     });
 

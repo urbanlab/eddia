@@ -107,6 +107,31 @@
   transform:scale(.5);
 }
 
+.screen[data-view="word"] .layer--interest {
+  opacity:.5;
+  pointer-events: none;
+}
+
+.screen[data-view="word"] .layer--interest .bubble--interest {
+  pointer-events: none;
+}
+
+.screen[data-view="word"] .layer--topic {
+  transform:scale(0);
+}
+
+.screen[data-view="word"] .bubble--word:not(.current) .bubble-scale {
+  transform:scale(0);
+}
+
+.screen[data-view="word"] .bubble--word.current {
+  opacity:1;
+}
+
+.screen[data-view="word"] .bubble--word.current .bubble-scale {
+  transform:scale(1);
+}
+
 /* .screen[data-view="interest"] .layer--word {
   transform:scale(1);
 } */
@@ -237,7 +262,8 @@
   background:url(/img/interest2.svg) no-repeat center center / 100% auto;
 }
 
-.screen[data-view="interest"] .bubble--interest.current {
+.screen[data-view="interest"] .bubble--interest.current,
+.screen[data-view="word"] .bubble--interest.current {
   transform:translate(960px, 540px) !important;
 }
 
@@ -263,7 +289,6 @@
 
 .bubble--word {
   transition:all 600ms cubic-bezier(0.77, 0, 0.175, 1);
-  transform:scale(0);
   opacity:0;
   pointer-events: none;
   width:200px;
@@ -275,6 +300,10 @@
 
 .bubble--word.no-transition {
   transition:opacity 600ms cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+.bubble--word .bubble-scale {
+  transform:scale(0);
 }
 
 .bubble--word.exists .bubble-scale {
