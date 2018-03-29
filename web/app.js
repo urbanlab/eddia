@@ -27,7 +27,6 @@ io.on('connection', function(socket) {
 	var filename;
 
 	socket.on('get_room_id', function(client) {
-		console.log("on('get_room_id')", client);
 		if (client === "manager") {
 			room_id = id.toString(16);
 			++id;
@@ -40,19 +39,19 @@ io.on('connection', function(socket) {
 
 	// client {"client": "manager/app", "room_id": "room_id"}
 	socket.on('room', function(client) {
-		console.log("on('room')", client);
 		if (client.client === "app")
 			room_id = client.room_id;
 		else if (client.client !== "manager")
 			console.log("Error, socket.on('room')");
 		filename = structs_path + room_id + ".json";
-		if (client.client == "manager")
+		if (client.client == "manager") {
+			console.log(filename);
 			write_data(filename, {"name": "Retard au travail", "children": []});
+		}
 		socket.join(room_id);
 	});
 
 	socket.on('bubble/interest/add', function(new_interest) {
-		console.log("bubble/interest/add");
 		var datas = get_data(filename);
 		if (datas == null || datas == undefined) {
 			console.log("Error, socket.on('add_category')");
@@ -65,13 +64,10 @@ io.on('connection', function(socket) {
 		datas.children.push({"name": new_interest.name, "children": []});
 		write_data(filename, datas);
 		io.to(room_id).emit("new_data");
-		console.log("ICI");
 		io.to(room_id).emit("bubble/add", {"type": "interest", "bubble": new_interest});
 	});
 
 	socket.on("bubble/word/add", function(new_word) {
-		console.log("bubble/word/add");
-		console.log('new_word', new_word);
 		var datas = get_data(filename);
 		if (datas == null || datas == undefined) {
 			console.log("Error, socket.on('add_bubble')");
@@ -82,9 +78,7 @@ io.on('connection', function(socket) {
 			console.log("Error, socket.on('bubble/word/add'), " + new_bubble.interest + " doesn't exist");
 			return;
 		}
-		console.log("node", node);
 		for (child in node.children) {
-			console.log(node.children[child]);
 			if (node.children[child].name === new_word.name)
 				return;
 		}
@@ -94,7 +88,6 @@ io.on('connection', function(socket) {
 	});
 
 	socket.on("bubble/content/add", function(new_content) {
-		console.log("bubble/content/add");
 		var datas = get_data(filename);
 		if (datas == null || datas == undefined) {
 			console.log("Error, socket.on('bubble/content/add')");
@@ -111,7 +104,6 @@ io.on('connection', function(socket) {
 	});
 	
 	socket.on('get_data', function() {
-		console.log("on('get_data')");
 		socket.emit('get_data', get_data(filename));
 	});
 
@@ -170,7 +162,5 @@ function get_data(filename) {
 }
 
 function write_data(filename, datas) {
-	fs.writeFileSync(filename, JSON.stringify(datas), function(err) {
-		if (err) throw err;
-	});
+	fs.writeFileSync(filename, JSON.stringify(datas));
 }
