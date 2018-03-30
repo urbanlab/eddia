@@ -120,6 +120,7 @@ io.on('connection', function(socket) {
 			if (contents_bd[index].word === new_content.word && contents_bd[index].content === new_content.content)
 				return;
 		contents_added.contents.push(new_content);
+		console.log("write in "+ contents_filename + " :", contents_added);
 		write_data(contents_filename, contents_added);
 		io.to(room_id).emit("bubble/add", {"type": "content", "bubble": new_content});
 	}
