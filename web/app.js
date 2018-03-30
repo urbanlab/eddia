@@ -162,6 +162,7 @@ io.on('connection', function(socket) {
 		}
 		
 	});
+
 	function remove_word(word, filename) {
 	       	var datas = get_data(filename);
 		if (datas == null)
@@ -174,7 +175,7 @@ io.on('connection', function(socket) {
 					}
 				}
 		}
-			write_data(filename, datas);
+		write_data(filename, datas);
 	}
         
         function remove_content(content, filename) {
@@ -185,6 +186,7 @@ io.on('connection', function(socket) {
         		if (contents_added[content_index].word === content.word && contents_added[content_index].content === content.content)
         			contents_added.splice(content_index, 1);
         	}
+		write_data(filename, contents_added);
         }
         
         function remove_interest(interest, filename) {
