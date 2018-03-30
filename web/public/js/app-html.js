@@ -74,7 +74,7 @@ window.onload = function () {
         }
     }
 
-    // createBubble('content', { type: 'quote', word: 'Truc', content: 'Lorem ipsum dolor sit amet lorem ipsum' });
+    createBubble('content', { type: 'quote', word: 'Truc', content: 'Lorem ipsum dolor sit amet lorem ipsum' });
     createBubble('content', { type: 'image', word: 'Truc', content: 'Texte de loi n°2', file: '/img/photo1.jpg' });
     createBubble('content', { type: 'image', word: 'Truc', content: 'Texte de loi n°4', file: '/img/photo1.jpg' });
 
@@ -591,6 +591,7 @@ window.onload = function () {
 
     setTimeout(function(){
       console.log(type);
+
       if (type == 'content') {
         $('.bubble--'+type+'[data-word="'+wordName+'"]').remove();
 
