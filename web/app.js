@@ -117,6 +117,15 @@ io.on('connection', function(socket) {
 			io.to(room_id).emit("new_data");
 		}
 	});
+	
+	socket.on('transcription/send', function(transcription) {
+		console.log(transcription);
+		/*
+		 * A comparer les mots avec les datas
+		 * Et creer les bulles en consequences
+		 *
+		 */
+	});
 });
 
 server.listen(3000);

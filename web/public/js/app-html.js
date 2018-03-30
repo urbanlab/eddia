@@ -35,11 +35,11 @@ window.onload = function () {
 	var once = 1;
 
 	socket.emit('room', {
-    "client": "app",
-    "room_id": room
-  });
+	    	"client": "app",
+		"room_id": room
+	});
 
-  socket.emit('get_data');
+	socket.emit('get_data');
 
 	socket.on('get_data', function(datas) {
 		init(datas);
@@ -48,7 +48,41 @@ window.onload = function () {
 	socket.on('bubble/add', function(bubble) {
 		console.log("on('bubble/add')", bubble);
 		createBubble(bubble.type, bubble.bubble);
-  });
+	});
+
+	init_microphone(socket);
+}
+
+function init_microphone(socket) {
+	if (!('webkitSpeechRecognition' in window)) {
+		upgrade();
+	} else {
+		var transcription = '';
+		var recognition = new webkitSpeechRecognition();
+		recognition.continuous = true;
+		recognition.interimResults = false;
+		recognition.lang = 'fr-FR';
+		recognition.start();
+
+		recognition.onstart = function() {
+			console.log('Recognition started');
+		}
+
+		recognition.onresult = function(event) {
+			for (var i = event.resultIndex; i < event.results.length; ++i)
+				transcription += event.results[i][0].transcript;
+			socket.emit('transcription/send', transcription);	
+		}
+
+		recognition.onerror = function(event) {
+			console.log('Recognition error');	
+		}
+
+		recognition.onend = function() {
+			console.log('Recognition finished. Should never happen');
+		}
+	}
+}
 
 
 
@@ -60,11 +94,10 @@ window.onload = function () {
       setPreviousView();
     });
 
-    $('.eye').on('click', function(){
+   $('.eye').on('click', function(){
       setEye($(this).data('side'));
     });
 
-  	// A enlever le topic mis en dur
     createBubble('topic', { name: datas.name });
 
     for (child in datas.children) {
@@ -702,4 +735,4 @@ window.onload = function () {
     }
   }
 
-}
+
