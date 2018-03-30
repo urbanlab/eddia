@@ -145,7 +145,7 @@ function gotStream(stream) {
 
 function listenLoop() {
 	console.log('meter.volume', meter.volume);
-      	if (meter.volume < 0.01) {
+      	if (meter.volume < 0.02) {
 		recognition.stop();
 	} else {
 		if (!recognizing) {

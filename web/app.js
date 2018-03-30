@@ -58,7 +58,6 @@ io.on('connection', function(socket) {
 		filename = structs_path + room_id + ".json";
 		contents_filename = contents_path + room_id + ".json";
 		if (client.client == "manager") {
-			console.log(filename);
 			write_data(filename, {"name": "Les horaires au travail", "children": []}); // Define a default scenario as a fallback (via a socket.emit from the manager)
 			write_data(contents_filename, { "contents": [] });
 		}
@@ -119,10 +118,10 @@ io.on('connection', function(socket) {
 		if (contents_added == null || contents_bd == null)
 			return;
 		for (index in contents_added)
-			if (contents_bd[index].word === new_content.word && contents_bd[index].content === new_content.content)
+			if (contents_added[index].word === new_content.word && contents_added[index].content === new_content.content) {
 				return;
+			}
 		contents_added.contents.push(new_content);
-		console.log("write in "+ contents_filename + " :", contents_added);
 		write_data(contents_filename, contents_added);
 		io.to(room_id).emit("bubble/add", {"type": "content", "bubble": new_content});
 	}
@@ -146,7 +145,6 @@ io.on('connection', function(socket) {
 		for (interest_index in model_interest_words["travail"]) { // For each interest
 			for (words_index in model_interest_words["travail"][interest_index]) { // For each words in interests
 				if (transcription.indexOf(model_interest_words["travail"][interest_index][words_index]) != -1) {
-					console.log("interest found:", interest_index);
 					if(!interests_found[model_interest_words[interest_index]]) {
 						interests_found[interest_index] = [];
 						add_interest({"name": interest_index});
@@ -155,17 +153,16 @@ io.on('connection', function(socket) {
 						return element === model_interest_words["travail"][interest_index][words_index]; 
 					}); 
 					if (found == undefined) {
-						console.log("addword/content", model_interest_words["travail"][interest_index][words_index]);
 						interests_found[interest_index].push(found); 
 						add_word({"name": model_interest_words["travail"][interest_index][words_index], "interest": interest_index});
-						var contents = get_data('./datas/contents.json');
-						console.log("contents before", contents);
-						if (contents != null)
-							for (index in contents.contents)
-								if (contents.contents[index].word === model_interest_words["travail"][interest_index][words_index])
-									add_content(contents.contents[index]);
+						var c = get_data("./datas/contents.json");
+						if (c != null) {
+							for (index in c.contents)
+								if (c.contents[index].word === model_interest_words["travail"][interest_index][words_index]) {
+									add_content(c.contents[index]);
+}
+						}
 					}
-					console.log("stocked", interests_found);
 				}
 			}
 		}
@@ -188,14 +185,14 @@ io.on('connection', function(socket) {
 	}
         
         function remove_content(content, filename) {
-        	var contents_added = get_data('./datas/contents/' + room_id + '.json');
+        	var contents_added = get_data(contents_filename);
 		if (contents_added == null)
 			return;
         	for (content_index in contents_added) {
         		if (contents_added[content_index].word === content.word && contents_added[content_index].content === content.content)
         			contents_added.splice(content_index, 1);
         	}
-		write_data(filename, contents_added);
+		write_data(contents_filename, contents_added);
         }
         
         function remove_interest(interest, filename) {

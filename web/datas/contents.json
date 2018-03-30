@@ -10,6 +10,14 @@
   {"word":"tram", "type": "image", "content":"Tram", "file": "/img/tram.jpg"},
   {"word":"train", "type": "image", "content":"Train", "file": "/img/train.jpg"},
   {"word":"satisfaction", "type": "image", "content":"Manger", "file": "/img/manger.jpg"},
-  {"word":"horaire", "type": "image", "content":"Horaires", "file": "/img/horaires.jpg"}
+  {"word":"horaire", "type": "image", "content":"Horaires", "file": "/img/horaires.jpg"},
+  {"word" : "retard", "type": "quote", "content": "Je ne peux pas arriver à l’heure et amener mon enfant à l’école"},
+  {"word" : "heure", "type": "quote", "content": "Je ne peux pas arriver à l’heure et amener mon enfant à l’école"},
+  {"word" : "embouteillage", "type": "quote", "content": "Je ne peux pas arriver à l’heure et amener mon enfant à l’école"},
+  {"word" : "bouchon", "type": "quote", "content": "Je ne peux pas arriver à l’heure et amener mon enfant à l’école"},
+  {"word" : "joie", "type": "quote", "content": "Je ne peux pas arriver à l’heure et amener mon enfant à l’école"},
+  {"word" : "voiture", "type": "quote", "content": "Je ne peux pas arriver à l’heure et amener mon enfant à l’école"},
+  {"word" : "covoiturage", "type": "quote", "content": "Je ne peux pas arriver à l’heure et amener mon enfant à l’école"},
+  {"word" : "contrainte", "type": "quote", "content": "Je ne peux pas arriver à l’heure et amener mon enfant à l’école"}
   ]
 }
