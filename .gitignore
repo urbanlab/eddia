@@ -1,2 +1,3 @@
 */node_modules
 web/datas/struct/*.json
+web/datas/contents/*.json
