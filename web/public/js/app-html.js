@@ -32,11 +32,11 @@ window.onload = function () {
 	var once = 1;
 
 	socket.emit('room', {
-    "client": "app",
-    "room_id": room
-  });
+	    	"client": "app",
+		"room_id": room
+	});
 
-  socket.emit('get_data');
+	socket.emit('get_data');
 
 	socket.on('get_data', function(datas) {
 		init(datas);
@@ -45,7 +45,40 @@ window.onload = function () {
 	socket.on('bubble/add', function(bubble) {
 		console.log("on('bubble/add')", bubble);
 		createBubble(bubble.type, bubble.bubble);
-  });
+	});
+
+	init_microphone(socket);
+}
+
+function init_microphone(socket) {
+	if (!('webkitSpeechRecognition' in window)) {
+		upgrade();
+	} else {
+		var transcription = '';
+		var recognition = new webkitSpeechRecognition();
+		recognition.continuous = true;
+		recognition.interimResults = false;
+		recognition.lang = 'fr-FR';
+		recognition.start();
+
+		recognition.onstart = function() {
+			console.log('Recognition started');
+		}
+
+		recognition.onresult = function(event) {
+			for (var i = event.resultIndex; i < event.results.length; ++i)
+				transcription += event.results[i][0].transcript;
+			socket.emit('transcription/send', transcription);	
+		}
+
+		recognition.onerror = function(event) {
+			console.log('Recognition error');	
+		}
+
+		recognition.onend = function() {
+			console.log('Recognition finished. Should never happen');
+		}
+	}
 }
 
 function init(datas) {
@@ -69,41 +102,6 @@ function init(datas) {
 	       createBubble('word', {"name": datas.children[child].children[word].name, "interest": datas.children[child].name});
       }
   }
-  /*createBubble('interest', { name: 'Transports' });
-  createBubble('interest', { name: 'Imprévus externes' });
-
-  createBubble('word', { name: 'Imprévu 1', interest: 'Imprévus externes' });
-  createBubble('word', { name: 'Imprévu 2', interest: 'Imprévus externes' });
-  createBubble('word', { name: 'Imprévu 3', interest: 'Imprévus externes' });
-
-  createBubble('word', { name: 'Transports 1', interest: 'Transports' });
-  createBubble('word', { name: 'Transports 2', interest: 'Transports' });
-  createBubble('word', { name: 'Transports 3', interest: 'Transports' });
-  createBubble('word', { name: 'Transports 4', interest: 'Transports' });
-  createBubble('word', { name: 'Transports 5', interest: 'Transports' });
-  createBubble('word', { name: 'Transports 6', interest: 'Transports' });
-  createBubble('word', { name: 'Transports 7', interest: 'Transports' });
-  createBubble('word', { name: 'Transports 8', interest: 'Transports' });
-
-  createBubble('word', { name: 'Imprévu 1sfsfsef', interest: 'Imprévus internes' });
-  createBubble('word', { name: 'Imprévu 2 sdfds fdsfd sds dsfdsf', interest: 'Imprévus internes' });
-  createBubble('word', { name: 'Imprévu sdf dsf dsf dsf ds f sd fd3', interest: 'Imprévus internes' });
-
-  createBubble('content', { type: 'quote', word: 'Transports 1', content: 'Lorem ipsum dolor sit amet lorem ipsum' });
-  createBubble('content', { type: 'image', word: 'Transports 2', content: 'Texte de loi n°2', file: 'photo1.jpg' });
-
-  setTimeout(function(){
-    createBubble('interest', { name: 'Imprévus internes' });
-  }, 1500);
-  */
-  //
-  // setTimeout(function(){
-  //   changeBubbleSize('inc', { type: 'interest', name: 'Transports' });
-  //   changeBubbleSize('inc', { type: 'interest', name: 'Transports' });
-  //   changeBubbleSize('inc', { type: 'interest', name: 'Transports' });
-  // },1000);
-
-  // setView('interest', { name: 'Imprévus externes' });
 }
 
 function setEye(side) {
