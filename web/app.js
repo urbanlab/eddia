@@ -161,20 +161,20 @@ io.on('connection', function(socket) {
 		
 	});
 	function remove_word(word, filename) {
-        var datas = get_data(filename);
-        console.log("datas", datas);
-        console.log("word.interest", word.interest);
-        for (child in datas.children) {
-        	if (datas.children[child].name === word.interest)
-        		for (words_index in datas.children[child].children) {
-        			if (datas.children[child].children[words_index].name === word.name) {
-        				datas.children[child].children.splice(words_index, 1);
-        				console.log("children", JSON.stringify(datas.children[child]));
-        			}
-        		}
-        	}
-        	write_data(filename, datas);
-        }
+	       	var datas = get_data(filename);
+		console.log("datas", datas);
+		console.log("word.interest", word.interest);
+		for (child in datas.children) {
+			if (datas.children[child].name === word.interest)
+				for (words_index in datas.children[child].children) {
+					if (datas.children[child].children[words_index].name === word.name) {
+						datas.children[child].children.splice(words_index, 1);
+						console.log("children", JSON.stringify(datas.children[child]));
+					}
+				}
+		}
+			write_data(filename, datas);
+	}
         
         function remove_content(content, filename) {
         	var contents_added = get_data('./datas/contents/' + room_id + '.json');
