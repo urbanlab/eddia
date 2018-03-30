@@ -1,6 +1,10 @@
 var express = require('express');
 var app = express();
-var server = require('http').createServer(app);
+var fs = require('fs');
+var server = require('https').createServer({
+  key: fs.readFileSync('certs/ssl-cert-snakeoil.key'),
+  cert: fs.readFileSync('certs/ssl-cert-snakeoil.pem')
+}, app);
 var io = require('socket.io')(server);
 
 var path = require('path');
@@ -155,7 +159,7 @@ io.on('connection', function(socket) {
 	});
 });
 
-server.listen(3000);
+server.listen(3010);
 
 function remove_word(word, filename) {
 	var datas = get_data(filename);
