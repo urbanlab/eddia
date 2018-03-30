@@ -142,6 +142,7 @@ function gotStream(stream) {
 }
 
 function listenLoop() {
+	console.log('meter.volume', meter.volume);
       	if (meter.volume < 0.01) {
 		recognition.stop();
 	} else {
@@ -178,6 +179,7 @@ function init_microphone(socket) {
 				}
 			console.log('transcription:', transcription);
 			socket.emit('transcription/send', transcription);	
+			transcription = '';
 		}
 
 		recognition.onerror = function(event) {
