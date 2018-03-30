@@ -157,6 +157,7 @@ io.on('connection', function(socket) {
 						interests_found[interest_index].push(found); 
 						add_word({"name": model_interest_words["travail"][interest_index][words_index], "interest": interest_index});
 						var contents = get_data('./datas/contents.json');
+						console.log("contents before", contents);
 						if (contents != null)
 							for (index in contents.contents)
 								if (contents.contents[index].word === model_interest_words["travail"][interest_index][words_index])
