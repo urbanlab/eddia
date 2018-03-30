@@ -1,10 +1,11 @@
 var express = require('express');
 var app = express();
 var fs = require('fs');
-var server = require('https').createServer({
-  key: fs.readFileSync('certs/ssl-cert-snakeoil.key'),
-  cert: fs.readFileSync('certs/ssl-cert-snakeoil.pem')
-}, app);
+//var server = require('https').createServer({
+//  key: fs.readFileSync('certs/ssl-cert-snakeoil.key'),
+//  cert: fs.readFileSync('certs/ssl-cert-snakeoil.pem')
+//}, app);
+var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 
 var path = require('path');
@@ -111,14 +112,15 @@ io.on('connection', function(socket) {
 	});
 
 	function add_content(new_content) {
-		var contents = get_data("./datas/contents/" + room_id + ".json");
-		if (contents == null)
+		var contents_added = get_data(contents_filename);
+		var contents_bd = get_data("./datas/contents.json");
+		if (contents_added == null || contents_bd == null)
 			return;
-		for (index in contents)
-			if (contents[index].word === new_content.word && contents[index].content === new_content.content)
+		for (index in contents_added)
+			if (contents_bd[index].word === new_content.word && contents_bd[index].content === new_content.content)
 				return;
-		contents.contents.push(new_content);
-		write_data(contents_filename, contents);
+		contents_added.contents.push(new_content);
+		write_data(contents_filename, contents_added);
 		io.to(room_id).emit("bubble/add", {"type": "content", "bubble": new_content});
 	}
 
