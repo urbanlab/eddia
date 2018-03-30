@@ -2,7 +2,7 @@
   "contents": [
   {"word": "télétravail", "type": "quote", "content": "Article L1222-9\nLe télétravailleur a les mêmes droits que le salarié qui exécute son travail dans les locaux de l'entreprise, notamment en ce qui concerne l'accès aux informations syndicales, la participation aux élections professionnelles et l'accès à la formation.\nL'employeur qui refuse d'accorder le bénéfice du télétravail à un salarié qui occupe un poste éligible à un mode d'organisation en télétravail dans les conditions prévues par accord collectif ou, à défaut, par la charte, doit motiver sa réponse.\n Le refus d'accepter un poste de télétravailleur n'est pas un motif de rupture du contrat de travail.\nune baisse de 5,5 jours par an d’arrêts maladie ;\nune augmentation du temps de travail de 2,5 % ;\nune augmentation de la productivité de 22 % ;\nune réduction de 40 min du temps moyen de trajet domicile-travail ;\nune augmentation de 45 min du temps moyen de sommeil des salariés."},
   {"word" : "tard", "type": "quote", "content": "Je ne peux pas arriver à l’heure et amener mon enfant à l’école"},
-  {"word": "horraires", "type": "quote", "content": "Tout salarié peut demander à bénéficier d'horaires individualisés. L'employeur peut mettre en place un dispositif d'horaires individualisés, sauf si le comité d'entreprise (CE) ou, à défaut, les délégués du personnel (DP) s'y opposent. En l'absence de représentants du personnel, l'inspection du travail doit autoriser la mise en place du dispositif, dans les 2 mois suivant le dépôt de la demande par l'employeur."},
+  {"word": "horaire", "type": "quote", "content": "Tout salarié peut demander à bénéficier d'horaires individualisés. L'employeur peut mettre en place un dispositif d'horaires individualisés, sauf si le comité d'entreprise (CE) ou, à défaut, les délégués du personnel (DP) s'y opposent. En l'absence de représentants du personnel, l'inspection du travail doit autoriser la mise en place du dispositif, dans les 2 mois suivant le dépôt de la demande par l'employeur."},
   {"word": "organisation", "type": "quote", "content": "Le travail en mode projet oblige à multiplier les échanges avec d’autres services, des partenaires. Au fil des années."},
   {"word":"retard", "type": "quote", "content": "la convention collective nationale des entreprises de propreté et services associés accorde une journée pour les pères et mères dont l’enfant entre pour la première fois à l’école.\nLe Code du travail n'a pas prévu de disposition prévue en cas de retard pour grève. Mais selon la jurisprudence, le retard occasionné par une grève ne peut pas être considéré comme une faute."},
   {"word": "productivité", "type": "quote", "content": "je suis encore sur windows XP, je n’arrive pas a être productif"},
@@ -10,6 +10,6 @@
   {"word":"tram", "type": "image", "content":"Tram", "file": "/img/tram.jpg"},
   {"word":"train", "type": "image", "content":"Train", "file": "/img/train.jpg"},
   {"word":"satisfaction", "type": "image", "content":"Manger", "file": "/img/manger.jpg"},
-  {"word":"horraire", "type": "image", "content":"Horaires", "file": "/img/horaires.jpg"}
+  {"word":"horaire", "type": "image", "content":"Horaires", "file": "/img/horaires.jpg"}
   ]
 }

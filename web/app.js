@@ -53,7 +53,7 @@ io.on('connection', function(socket) {
 		filename = structs_path + room_id + ".json";
 		if (client.client == "manager") {
 			console.log(filename);
-			write_data(filename, {"name": "Retard au travail", "children": []}); // Define a default scenario as a fallback (via a socket.emit from the manager)
+			write_data(filename, {"name": "Les horaires au travail", "children": []}); // Define a default scenario as a fallback (via a socket.emit from the manager)
 			write_data('./datas/contents/' + room_id + ".json", { "contents": [] });
 		}
 		socket.join(room_id);

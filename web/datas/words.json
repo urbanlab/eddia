@@ -272,6 +272,7 @@
 
     ],
     "horaire": [
+	   "horaire",
       "heure",
       "arrivé",
       "matin",
@@ -294,6 +295,7 @@
       "programme"
     ],
     "transport": [
+	    "train",
       "vélo",
       "cycliste",
       "piéton",
