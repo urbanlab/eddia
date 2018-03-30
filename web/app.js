@@ -18,6 +18,8 @@ app.get('/', function(req, res, next) {
 
 // Main
 
+var model_interest_words = require('./datas/words.json')
+
 var structs_path = "datas/struct/";
 
 var id = 1;
@@ -120,6 +122,15 @@ io.on('connection', function(socket) {
 	
 	socket.on('transcription/send', function(transcription) {
 		console.log(transcription);
+		transcription = transcription.split(' ');
+		for (tr_words_index in transcription) {
+			for (interest_index in model_interest_words) {
+				for (words_index in model_interest_words[interest_index]) {
+					if (model_interest_words[interest_index][words_index] == transcription[tr_words_index])
+						console.log("interest found:", model_interest_words[interest_index]);
+				}
+			}
+		}
 		/*
 		 * A comparer les mots avec les datas
 		 * Et creer les bulles en consequences
