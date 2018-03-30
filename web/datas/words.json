@@ -1,6 +1,6 @@
 {
   "travail": {
-    "adaptabilité": [
+    "adaptabilité des horaires": [
       "flexibilité",
       "souplesse",
       "adapter",
@@ -18,9 +18,31 @@
       "harmonie",
       "rééquilibré",
       "réguler",
-      "liberté"
+      "liberté",
+      "bouchon",
+      "embouteillage",
+      "congestion",
+      "flux",
+      "mobilité",
+      "aller au travail",
+      "perte de temps",
+      "trajet",
+      "alternatif",
+      "traverser",
+      "périphérique",
+      "route",
+      "autoroute",
+      "national",
+      "départemental",
+      "fluidifié",
+      "vitesse de déplacement",
+      "lent",
+      "régulation",
+      "petite route",
+      "désengorger",
+      "accident"
     ],
-    "déséquilibre": [
+    "déséquilibre du temps de travail": [
       "crise",
       "défaut",
       "dérégulation",
@@ -35,7 +57,7 @@
       "jalousie",
       "pénalité"
     ],
-    "organistation": [
+    "mauvaise organistation": [
       "organisme",
       "planification",
       "constitution",
@@ -62,7 +84,7 @@
       "souplesse",
       "ajustement"
     ],
-    "dépendance": [
+    "recherche d'indépendance": [
       "liberté",
       "libre- arbitre",
       "volonté",
@@ -76,7 +98,7 @@
       "forcé",
       "rendre libre l’employer"
     ],
-    "conflit": [
+    "création de conflit": [
       "règlement",
       "neutralité",
       "rivalité",
@@ -98,7 +120,7 @@
       "discorde",
       "division"
     ],
-    "répartition": [
+    "meilleur répartition du travail": [
       "gain de temps",
       "distribution",
       "inégalité",
@@ -117,7 +139,7 @@
       "réajustement",
       "régulation"
     ],
-    "confiance": [
+    "climat de confiance": [
       "méfiance",
       "abandon",
       "fidélité",
@@ -133,7 +155,7 @@
       "entente",
       "union"
     ],
-    "optimisation": [
+    "optimisation du travail": [
       "amélioration",
       "solution",
       "résolution",
@@ -213,30 +235,6 @@
       "malentendu",
       "rancœur"
     ],
-    "trafic": [
-      "bouchon",
-      "embouteillage",
-      "congestion",
-      "flux",
-      "mobilité",
-      "aller au travail",
-      "perte de temps",
-      "trajet",
-      "alternatif",
-      "traverser",
-      "périphérique",
-      "route",
-      "autoroute",
-      "national",
-      "départemental",
-      "fluidifié",
-      "vitesse de déplacement",
-      "lent",
-      "régulation",
-      "petite route",
-      "désengorger",
-      "accident"
-    ],
     "bien être": [
       "gaieté",
       "joyeuse",
@@ -260,11 +258,13 @@
       "excitation",
       "égale"
     ],
-    "conscience collective": [
+    "collaboration": [
       "bienveillance",
       "partage",
       "échange",
-      "citoyen"
+	"citoyen",
+	"aide", "appui", "collaboration", "concours", "coopération", "participation", "soutien", "participation", "partenariat" 
+
     ],
     "horaire": [
       "heure",
