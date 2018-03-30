@@ -55,6 +55,10 @@ io.on('connection', function(socket) {
 	});
 
 	socket.on('bubble/interest/add', function(new_interest) {
+		add_interest(new_interest);
+	});
+
+	function add_interest(new_interest) {
 		var datas = get_data(filename);
 		if (datas == null || datas == undefined) {
 			console.log("Error, socket.on('add_category')");
@@ -68,9 +72,13 @@ io.on('connection', function(socket) {
 		write_data(filename, datas);
 		io.to(room_id).emit("new_data");
 		io.to(room_id).emit("bubble/add", {"type": "interest", "bubble": new_interest});
-	});
+	};
 
 	socket.on("bubble/word/add", function(new_word) {
+		add_word(new_word);
+	});
+
+	function add_word(new_word) {
 		var datas = get_data(filename);
 		if (datas == null || datas == undefined) {
 			console.log("Error, socket.on('add_bubble')");
@@ -78,7 +86,7 @@ io.on('connection', function(socket) {
 		}
 		var node = find_interest(new_word.interest, datas);
 		if (node === null) {
-			console.log("Error, socket.on('bubble/word/add'), " + new_bubble.interest + " doesn't exist");
+			console.log("Error, socket.on('bubble/word/add'), " + new_word.interest + " doesn't exist");
 			return;
 		}
 		for (child in node.children) {
@@ -88,7 +96,7 @@ io.on('connection', function(socket) {
 		node.children.push(new_word);
 		write_data(filename, datas);
 		io.to(room_id).emit("bubble/add", {"type": "word", "bubble": new_word});
-	});
+	}
 
 	socket.on("bubble/content/add", function(new_content) {
 		var datas = get_data(filename);
@@ -123,26 +131,24 @@ io.on('connection', function(socket) {
 	
 	socket.on('transcription/send', function(transcription) {
 		console.log(transcription);
-		transcription = transcription.split(' ');
-		for (tr_words_index in transcription) { // For each word given
-			for (interest_index in model_interest_words) { // For each interest
-				for (words_index in model_interest_words[interest_index]) { // For each words in interests
-					if (model_interest_words[interest_index][words_index] == transcription[tr_words_index]) {
-						console.log("interest found:", model_interest_words[interest_index]);
-						if(!interests_found[model_interest_words[interest_index]]) {
-							interests_found[model_interest_words[interest_index]] = [];
-							io.to(room_id).emit("new_data");
-							io.to(room_id).emit("bubble/add", {"type": "interest", "bubble": model_interest_words[interest_index]});
-						}
-						var found = interests_found[model_interest_words[interest_index]].find(function(element) {
-							return element === model_interest_words[interest_index][words_index]; 
-						}); 
-						if (found == undefined) {
-							interests_found[model_interest_words[interest_index]].push(found); 
-							io.to(room_id).emit("bubble/add", {"type": "word", "bubble": {"name": found, "interest": model_interest_words[interest_index]}});
-						}
-						console.log("stocked", interests_found);
+		console.log(model_interest_words["travail"]);
+		for (interest_index in model_interest_words["travail"]) { // For each interest
+			for (words_index in model_interest_words["travail"][interest_index]) { // For each words in interests
+//				console.log("tr", transcription, "== word", model_interest_words["travail"][interest_index][words_index], "in", interest_index);
+				if (transcription.indexOf(model_interest_words["travail"][interest_index][words_index]) != -1) {
+					console.log("interest found:", interest_index);
+					if(!interests_found[model_interest_words[interest_index]]) {
+						interests_found[interest_index] = [];
+						add_interest({"name": interest_index});
 					}
+					var found = interests_found[interest_index].find(function(element) {
+						return element === model_interest_words["travail"][interest_index][words_index]; 
+					}); 
+					if (found == undefined) {
+						interests_found[interest_index].push(found); 
+						add_word({"name": model_interest_words["travail"][interest_index][words_index], "interest": interest_index});
+					}
+					console.log("stocked", interests_found);
 				}
 			}
 		}
@@ -152,7 +158,7 @@ io.on('connection', function(socket) {
 server.listen(3000);
 
 function remove_word(word) {
-
+	var datas = get_data(filename);
 }
 
 function remove_content(content) {
