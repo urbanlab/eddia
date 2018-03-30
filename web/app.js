@@ -25,7 +25,7 @@ app.get('/', function(req, res, next) {
 var model_interest_words = require('./datas/words.json')
 
 var structs_path = "./datas/struct/";
-var contents_filename = "./datas/contents/";
+var contents_path = "./datas/contents/";
 
 var id = 1;
 
