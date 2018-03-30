@@ -181,6 +181,7 @@ function remove_word(word, filename) {
 	}
 	
 	function remove_content(content, filename) {
+		var contents_added = get_data('./datas/contents/' + room_id + '.json');
 		for (content_index in contents_added) {
 			if (contents_added[content_index].word === content.word && contents_added[content_index].content === content.content)
 				contents_added.splice(content_index, 1);
