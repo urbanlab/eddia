@@ -7,9 +7,9 @@
   {"word":"retard", "type": "quote", "content": "la convention collective nationale des entreprises de propreté et services associés accorde une journée pour les pères et mères dont l’enfant entre pour la première fois à l’école.\nLe Code du travail n'a pas prévu de disposition prévue en cas de retard pour grève. Mais selon la jurisprudence, le retard occasionné par une grève ne peut pas être considéré comme une faute."},
   {"word": "productivité", "type": "quote", "content": "je suis encore sur windows XP, je n’arrive pas a être productif"},
   {"word":"planing", "type": "quote", "content": "Le salarié bénéficiant d'horaires de travail individualisés choisit ses heures d'arrivée et de départ, en respectant les plages fixes prévues par l'employeur."},
-  {"word":"tram", "type": "image", "content":"tram.jpg", "file": "/public/img/"},
-  {"word":"train", "type": "image", "content":"train.jpg", "file": "/public/img/"},
-  {"word":"satisfaction", "type": "image", "content":"manger.jpg", "file": "/public/img/"},
-  {"word":"horraire", "type": "image", "content":"horraires.jpg", "file": "/public/img/"}
+  {"word":"tram", "type": "image", "content":"Tram", "file": "/img/tram.jpg"},
+  {"word":"train", "type": "image", "content":"Train", "file": "/img/train.jpg"},
+  {"word":"satisfaction", "type": "image", "content":"Manger", "file": "/img/manger.jpg"},
+  {"word":"horraire", "type": "image", "content":"Horaires", "file": "/img/horaires.jpg"}
   ]
 }
