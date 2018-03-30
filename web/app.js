@@ -139,6 +139,7 @@ io.on('connection', function(socket) {
 						return element === model_interest_words["travail"][interest_index][words_index]; 
 					}); 
 					if (found == undefined) {
+						console.log("addword/content", model_interest_words["travail"][interest_index][words_index]);
 						interests_found[interest_index].push(found); 
 						add_word({"name": model_interest_words["travail"][interest_index][words_index], "interest": interest_index});
 						var contents = get_data('./datas/contents/contents.json');
