@@ -24,7 +24,7 @@ app.get('/', function(req, res, next) {
 
 var model_interest_words = require('./datas/words.json')
 
-var structs_path = "datas/struct/";
+var structs_path = "./datas/struct/";
 
 var id = 1;
 
@@ -109,6 +109,9 @@ io.on('connection', function(socket) {
 
 	function add_content(new_content) {
 		var contents = get_data("./datas/contents/" + room_id + ".json");
+		for (index in contents)
+			if (contents[index].word === new_content.word && contents[index].content === new_content.content)
+				return;
 		contents.contents.push(new_content);
 		io.to(room_id).emit("bubble/add", {"type": "content", "bubble": new_content});
 	}
