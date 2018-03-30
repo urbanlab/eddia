@@ -160,73 +160,67 @@ io.on('connection', function(socket) {
 		}
 		
 	});
+	function remove_word(word, filename) {
+        var datas = get_data(filename);
+        console.log("datas", datas);
+        console.log("word.interest", word.interest);
+        for (child in datas.children) {
+        	if (datas.children[child].name === word.interest)
+        		for (words_index in datas.children[child].children) {
+        			if (datas.children[child].children[words_index].name === word.name) {
+        				datas.children[child].children.splice(words_index, 1);
+        				console.log("children", JSON.stringify(datas.children[child]));
+        			}
+        		}
+        	}
+        	write_data(filename, datas);
+        }
+        
+        function remove_content(content, filename) {
+        	var contents_added = get_data('./datas/contents/' + room_id + '.json');
+        	for (content_index in contents_added) {
+        		if (contents_added[content_index].word === content.word && contents_added[content_index].content === content.content)
+        			contents_added.splice(content_index, 1);
+        	}
+        }
+        
+        function remove_interest(interest, filename) {
+        
+        }
+        
+        
+        function find_interest(interest_name, topic) {
+        	for (child in topic.children)
+        		if (topic.children[child].name == interest_name)
+        			return topic.children[child];
+        	return null;
+        }
+        
+        function find_word(interest_name, word_name, currentNode) {
+        	var interest = find_interest(interest_name, currentNode);
+        	if (interest == null)
+        		return null;
+        	for (child in interest.children)
+        		if (interest.children[child].name == word_name)
+        			return interest.children[child].name;
+        	return null;
+        }
+        
+        function update_data(socket, filename) {
+        	var data = get_data(filename);
+        	if (data)
+        		socket.emit("update data", data);
+        }
+        
+        function get_data(filename) {
+        	return JSON.parse(fs.readFileSync(filename, "utf8"));
+        }
+        
+        function write_data(filename, datas) {
+        	fs.writeFileSync(filename, JSON.stringify(datas));
+        }
+
+
 });
 
 server.listen(3010);
-
-function remove_word(word, filename) {
-	var datas = get_data(filename);
-	console.log("datas", datas);
-	console.log("word.interest", word.interest);
-	for (child in datas.children) {
-		if (datas.children[child].name === word.interest)
-			for (words_index in datas.children[child].children) {
-				if (datas.children[child].children[words_index].name === word.name) {
-					datas.children[child].children.splice(words_index, 1);
-					console.log("children", JSON.stringify(datas.children[child]));
-				}
-			}
-		}
-		write_data(filename, datas);
-	}
-	
-	function remove_content(content, filename) {
-		var contents_added = get_data('./datas/contents/' + room_id + '.json');
-		for (content_index in contents_added) {
-			if (contents_added[content_index].word === content.word && contents_added[content_index].content === content.content)
-				contents_added.splice(content_index, 1);
-		}
-	}
-	
-	function remove_interest(interest, filename) {
-	
-	}
-	
-	
-	function find_interest(interest_name, topic) {
-		for (child in topic.children)
-			if (topic.children[child].name == interest_name)
-				return topic.children[child];
-		return null;
-	}
-	
-	function find_word(interest_name, word_name, currentNode) {
-		var interest = find_interest(interest_name, currentNode);
-		if (interest == null)
-			return null;
-		for (child in interest.children)
-			if (interest.children[child].name == word_name)
-				return interest.children[child].name;
-		return null;
-	}
-	
-	function update_data(socket, filename) {
-		var data = get_data(filename);
-		if (data)
-			socket.emit("update data", data);
-	}
-	
-	function get_data(filename) {
-		return JSON.parse(fs.readFileSync(filename, "utf8"));
-	}
-	
-	function write_data(filename, datas) {
-		fs.writeFileSync(filename, JSON.stringify(datas));
-	}
-
-
-// });
-
-// server.listen(3000);
-
-
