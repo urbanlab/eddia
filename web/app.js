@@ -109,6 +109,8 @@ io.on('connection', function(socket) {
 
 	function add_content(new_content) {
 		var contents = get_data("./datas/contents/" + room_id + ".json");
+		if (contents == null)
+			return;
 		for (index in contents)
 			if (contents[index].word === new_content.word && contents[index].content === new_content.content)
 				return;
@@ -148,9 +150,10 @@ io.on('connection', function(socket) {
 						interests_found[interest_index].push(found); 
 						add_word({"name": model_interest_words["travail"][interest_index][words_index], "interest": interest_index});
 						var contents = get_data('./datas/contents.json');
-						for (index in contents.contents)
-							if (contents.contents[index].word === model_interest_words["travail"][interest_index][words_index])
-								add_content(contents.contents[index]);
+						if (contents != null)
+							for (index in contents.contents)
+								if (contents.contents[index].word === model_interest_words["travail"][interest_index][words_index])
+									add_content(contents.contents[index]);
 					}
 					console.log("stocked", interests_found);
 				}
@@ -160,6 +163,8 @@ io.on('connection', function(socket) {
 	});
 	function remove_word(word, filename) {
 	       	var datas = get_data(filename);
+		if (datas == null)
+			return;
 		for (child in datas.children) {
 			if (datas.children[child].name === word.interest)
 				for (words_index in datas.children[child].children) {
@@ -173,6 +178,8 @@ io.on('connection', function(socket) {
         
         function remove_content(content, filename) {
         	var contents_added = get_data('./datas/contents/' + room_id + '.json');
+		if (contents_added == null)
+			return;
         	for (content_index in contents_added) {
         		if (contents_added[content_index].word === content.word && contents_added[content_index].content === content.content)
         			contents_added.splice(content_index, 1);
