@@ -129,13 +129,18 @@ io.on('connection', function(socket) {
 				for (words_index in model_interest_words[interest_index]) { // For each words in interests
 					if (model_interest_words[interest_index][words_index] == transcription[tr_words_index]) {
 						console.log("interest found:", model_interest_words[interest_index]);
-						if(!interests_found[model_interest_words[interest_index]])
+						if(!interests_found[model_interest_words[interest_index]]) {
 							interests_found[model_interest_words[interest_index]] = [];
+							io.to(room_id).emit("new_data");
+							io.to(room_id).emit("bubble/add", {"type": "interest", "bubble": model_interest_words[interest_index]});
+						}
 						var found = interests_found[model_interest_words[interest_index]].find(function(element) {
 							return element === model_interest_words[interest_index][words_index]; 
 						}); 
-						if (found == undefined)
+						if (found == undefined) {
 							interests_found[model_interest_words[interest_index]].push(found); 
+							io.to(room_id).emit("bubble/add", {"type": "word", "bubble": {"name": found, "interest": model_interest_words[interest_index]}});
+						}
 						console.log("stocked", interests_found);
 					}
 				}
