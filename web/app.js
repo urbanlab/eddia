@@ -19,6 +19,7 @@ app.get('/', function(req, res, next) {
 // Main
 
 var model_interest_words = require('./datas/words.json')
+var interests_found = {};
 
 var structs_path = "datas/struct/";
 
@@ -123,19 +124,23 @@ io.on('connection', function(socket) {
 	socket.on('transcription/send', function(transcription) {
 		console.log(transcription);
 		transcription = transcription.split(' ');
-		for (tr_words_index in transcription) {
-			for (interest_index in model_interest_words) {
-				for (words_index in model_interest_words[interest_index]) {
-					if (model_interest_words[interest_index][words_index] == transcription[tr_words_index])
+		for (tr_words_index in transcription) { // For each word given
+			for (interest_index in model_interest_words) { // For each interest
+				for (words_index in model_interest_words[interest_index]) { // For each words in interests
+					if (model_interest_words[interest_index][words_index] == transcription[tr_words_index]) {
 						console.log("interest found:", model_interest_words[interest_index]);
+						if(!interests_found[model_interest_words[interest_index]])
+							interests_found[model_interest_words[interest_index]] = [];
+						var found = interests_found[model_interest_words[interest_index]].find(function(element) {
+							return element === model_interest_words[interest_index][words_index]; 
+						}); 
+						if (found == undefined)
+							interests_found[model_interest_words[interest_index]].push(found); 
+						console.log("stocked", interests_found);
+					}
 				}
 			}
 		}
-		/*
-		 * A comparer les mots avec les datas
-		 * Et creer les bulles en consequences
-		 *
-		 */
 	});
 });
 
