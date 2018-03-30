@@ -3,20 +3,43 @@
 <head>
   <meta charset="utf-8">
   <title>EDDIA</title>
+  <body bgcolor="#384064">
+  <style> 
+input[type=text] {
+    border: none;
+    background-color: #50e6c8;
+    color: #384064;
+}
+input[type=button] {
+    background-color: #3ebca3;
+color: #384064;
+    border: none;
+    text-decoration: none;
+    display: inline-block;
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+input[type=number] {
+    border: none;
+    background-color: #50e6c8;
+    color: #384064;
+}
+
+</style>
 </head>
 <body>
-  <a href="#" target="_blank" id="link_app">Open app</a>
-  <div id="add_word">
-     <h2>Bulle</h2>
-     <select id="word_interest"></select>
-     <input id="word_name" type="text" placeholder="Nom de la bulle">
-     <input id="word_size" type="number" placeholder="Taille de la bulle">
-     <input type="button" onclick="add_word()" value="Ajouter une bulle">
-  </div>
-  <div>
-     <h2>Categorie</h2>
+  <a href="#" target="_blank" id="link_app" style="color: #50e6c8">Open app</a>
+    <div>
+     <h2 style="color: #50e6c8">Categorie</h2>
      <input id="interest_name" type="text" placeholder="Nom de la categorie">
      <input type="button" onclick="add_interest()" value="Ajouter une categorie">
+  </div>
+  <div id="add_word">
+     <h2 style="color: #50e6c8">Ajouter un mot</h2>
+     <select id="word_interest"></select>
+     <input id="word_name" type="text" placeholder="Mot">
+     <input id="word_size" type="number" placeholder="Taille de la bulle">
+     <input type="button" onclick="add_word()" value="Ajouter un mot">
   </div>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/js/manager.js"></script>

@@ -223,7 +223,7 @@ function init_microphone(socket) {
         }
     }
 
-    createBubble('content', { type: 'quote', word: 'Truc', content: 'Lorem ipsum dolor sit amet lorem ipsum' });
+    createBubble('content', { type: 'quote', word: 'Truc', content: 'La convention collective nationale pour l\'entreprise de la société accorde une journée pour père et mère quand l\'enfant entre pour la première fois à l\'école' });
     createBubble('content', { type: 'image', word: 'Truc', content: 'Texte de loi n°2', file: '/img/photo1.jpg' });
     createBubble('content', { type: 'image', word: 'Truc', content: 'Texte de loi n°4', file: '/img/photo1.jpg' });
 
@@ -471,6 +471,7 @@ function init_microphone(socket) {
       DOM_bubble
         .attr('data-word', d.word)
         .attr('data-interet', d.interet)
+        .attr('data-content-type', d.type);
     }
 
     if (type == 'word') {
@@ -620,6 +621,15 @@ function init_microphone(socket) {
         DOM_bubbleScale
           .append(DOM_bubbleThumbnail)
           .append(DOM_bubbleThumbnailLabel);
+      }
+
+      if (d.type == 'quote') {
+        var DOM_bubbleQuote = $('<div/>')
+          .addClass('bubble-quote')
+          .text(d.content);
+
+        DOM_bubbleScale
+          .append(DOM_bubbleQuote);
       }
     }
 
