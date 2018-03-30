@@ -741,8 +741,7 @@ function init_microphone(socket) {
       type: type,
       interest: interestName,
       word: wordName,
-      name: name,
-      roomId: room
+      name: name
     });
 
     if (type == 'content') {

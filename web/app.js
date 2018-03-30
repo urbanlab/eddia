@@ -120,11 +120,11 @@ io.on('connection', function(socket) {
 
 	socket.on('bubble/remove', function(bubble) {
 		if (bubble.type == "word") {
-			remove_word(bubble);
+			remove_word(bubble, filename);
 		} else if (bubble.type == "content") {
-			remove_content(bubble);
+			remove_content(bubble, filename);
 		} else if (bubble.type == "interest") {
-			remove_interest(bubble);
+			remove_interest(bubble, filename);
 			io.to(room_id).emit("new_data");
 		}
 	});
@@ -157,15 +157,27 @@ io.on('connection', function(socket) {
 
 server.listen(3000);
 
-function remove_word(word) {
+function remove_word(word, filename) {
 	var datas = get_data(filename);
+	console.log("datas", datas);
+	console.log("word.interest", word.interest);
+	for (child in datas.children) {
+		if (datas.children[child].name === word.interest)
+			for (words_index in datas.children[child].children) {
+				if (datas.children[child].children[words_index].name === word.name) {
+					datas.children[child].children.splice(words_index, 1);
+					console.log("children", JSON.stringify(datas.children[child]));
+				}
+			}
+	}
+	write_data(filename, datas);
 }
 
-function remove_content(content) {
+function remove_content(content, filename) {
 
 }
 
-function remove_interest(interest) {
+function remove_interest(interest, filename) {
 
 }
 
