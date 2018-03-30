@@ -225,9 +225,9 @@ function init_microphone(socket) {
         }
     }
 
-    createBubble('content', { type: 'quote', word: 'Truc', content: 'La convention collective nationale pour l\'entreprise de la société accorde une journée pour père et mère quand l\'enfant entre pour la première fois à l\'école' });
-    createBubble('content', { type: 'image', word: 'Truc', content: 'Texte de loi n°2', file: '/img/photo1.jpg' });
-    createBubble('content', { type: 'image', word: 'Truc', content: 'Texte de loi n°4', file: '/img/photo1.jpg' });
+    //createBubble('content', { type: 'quote', word: 'Truc', content: 'La convention collective nationale pour l\'entreprise de la société accorde une journée pour père et mère quand l\'enfant entre pour la première fois à l\'école' });
+    //createBubble('content', { type: 'image', word: 'Truc', content: 'Texte de loi n°2', file: '/img/photo1.jpg' });
+    //createBubble('content', { type: 'image', word: 'Truc', content: 'Texte de loi n°4', file: '/img/photo1.jpg' });
 
     /*createBubble('interest', { name: 'Transports' });
     createBubble('interest', { name: 'Imprévus externes' });

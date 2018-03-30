@@ -219,8 +219,6 @@
       "irritable",
       "lunatique",
       "aigreur",
-      "irritation",
-      "agressivité",
       "méchante",
       "changeante",
       "triste",
@@ -259,11 +257,18 @@
       "égale"
     ],
     "collaboration": [
-      "bienveillance",
-      "partage",
-      "échange",
-	"citoyen",
-	"aide", "appui", "collaboration", "concours", "coopération", "participation", "soutien", "participation", "partenariat" 
+      	"bienveillance",
+      	"partage",
+      	"échange",
+       	"citoyen",
+	"aide",
+       	"appui",
+       	"collaboration",
+       	"concours",
+       	"coopération",
+       	"participation",
+       	"soutien",
+       	"partenariat" 
 
     ],
     "horaire": [
@@ -288,20 +293,6 @@
       "planning",
       "programme"
     ],
-    "transport en commun": [
-      "vélo",
-      "cycliste",
-      "piéton",
-      "bus",
-      "covoiturage",
-      "collaboratif",
-      "pollution",
-      "tram",
-      "métro",
-      "multimodal",
-      "voiture",
-      "autonome"
-    ],
     "transport": [
       "vélo",
       "cycliste",
@@ -313,8 +304,6 @@
       "tram",
       "métro",
       "multimodal",
-      "voiture",
-      "autonome",
       "voiture",
       "voiture autonome",
       "bagnole",

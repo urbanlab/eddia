@@ -19,7 +19,6 @@ app.get('/', function(req, res, next) {
 // Main
 
 var model_interest_words = require('./datas/words.json')
-var interests_found = {};
 
 var structs_path = "datas/struct/";
 
@@ -28,6 +27,7 @@ var id = 1;
 io.on('connection', function(socket) {
 	var room_id;
 	var filename;
+	var interests_found = {};
 
 	socket.on('get_room_id', function(client) {
 		if (client === "manager") {
@@ -50,6 +50,7 @@ io.on('connection', function(socket) {
 		if (client.client == "manager") {
 			console.log(filename);
 			write_data(filename, {"name": "Retard au travail", "children": []}); // Define a default scenario as a fallback (via a socket.emit from the manager)
+			write_data('./datas/contents/' + room_id + ".json", { "contents": [] });
 		}
 		socket.join(room_id);
 	});
@@ -99,20 +100,14 @@ io.on('connection', function(socket) {
 	}
 
 	socket.on("bubble/content/add", function(new_content) {
-		var datas = get_data(filename);
-		if (datas == null || datas == undefined) {
-			console.log("Error, socket.on('bubble/content/add')");
-			return;
-		}
-		var node = find_word(new_content.interest, new_content.word.name, datas);
-		if (node == null) {
-			console.log("Error, socket.on('bubble/content/add'), doesn't exist");
-			return;
-		}
-		node.children.push(new_word.word);
-		write_data(filename, datas);
-		io.to(room_id).emit("bubble/add", {"type": "content", "bubble": new_content});
+		add_content(new_content);
 	});
+
+	function add_content(new_content) {
+		var contents = get_data("./datas/contents/" + room_id + ".json");
+		contents.contents.push(new_content);
+		io.to(room_id).emit("bubble/add", {"type": "content", "bubble": new_content});
+	}
 
 	socket.on('get_data', function() {
 		socket.emit('get_data', get_data(filename));
@@ -134,7 +129,6 @@ io.on('connection', function(socket) {
 		console.log(model_interest_words["travail"]);
 		for (interest_index in model_interest_words["travail"]) { // For each interest
 			for (words_index in model_interest_words["travail"][interest_index]) { // For each words in interests
-//				console.log("tr", transcription, "== word", model_interest_words["travail"][interest_index][words_index], "in", interest_index);
 				if (transcription.indexOf(model_interest_words["travail"][interest_index][words_index]) != -1) {
 					console.log("interest found:", interest_index);
 					if(!interests_found[model_interest_words[interest_index]]) {
@@ -147,70 +141,78 @@ io.on('connection', function(socket) {
 					if (found == undefined) {
 						interests_found[interest_index].push(found); 
 						add_word({"name": model_interest_words["travail"][interest_index][words_index], "interest": interest_index});
+						var contents = get_data('./datas/contents/contents.json');
+						for (index in contents.contents)
+							if (contents.contents[index].word === model_interest_words["travail"][interest_index][words_index])
+								add_content(contents.contents[index]);
 					}
 					console.log("stocked", interests_found);
 				}
 			}
 		}
+		
 	});
+	function remove_word(word, filename) {
+		var datas = get_data(filename);
+		console.log("datas", datas);
+		console.log("word.interest", word.interest);
+		for (child in datas.children) {
+			if (datas.children[child].name === word.interest)
+				for (words_index in datas.children[child].children) {
+					if (datas.children[child].children[words_index].name === word.name) {
+						datas.children[child].children.splice(words_index, 1);
+					}
+				}
+		}
+		write_data(filename, datas);
+	}
+	
+	function remove_content(content, filename) {
+		for (content_index in contents_added) {
+			if (contents_added[content_index].word === content.word && contents_added[content_index].content === content.content)
+				contents_added.splice(content_index, 1);
+		}
+	}
+	
+	function remove_interest(interest, filename) {
+	
+	}
+	
+	
+	function find_interest(interest_name, topic) {
+		for (child in topic.children)
+			if (topic.children[child].name == interest_name)
+				return topic.children[child];
+		return null;
+	}
+	
+	function find_word(interest_name, word_name, currentNode) {
+		var interest = find_interest(interest_name, currentNode);
+		if (interest == null)
+			return null;
+		for (child in interest.children)
+			if (interest.children[child].name == word_name)
+				return interest.children[child].name;
+		return null;
+	}
+	
+	function update_data(socket, filename) {
+		var data = get_data(filename);
+		if (data)
+			socket.emit("update data", data);
+	}
+	
+	function get_data(filename) {
+		return JSON.parse(fs.readFileSync(filename, "utf8"));
+	}
+	
+	function write_data(filename, datas) {
+		fs.writeFileSync(filename, JSON.stringify(datas));
+	}
+
+
 });
 
 server.listen(3000);
-
-function remove_word(word, filename) {
-	var datas = get_data(filename);
-	console.log("datas", datas);
-	console.log("word.interest", word.interest);
-	for (child in datas.children) {
-		if (datas.children[child].name === word.interest)
-			for (words_index in datas.children[child].children) {
-				if (datas.children[child].children[words_index].name === word.name) {
-					datas.children[child].children.splice(words_index, 1);
-					console.log("children", JSON.stringify(datas.children[child]));
-				}
-			}
-	}
-	write_data(filename, datas);
-}
-
-function remove_content(content, filename) {
-
-}
-
-function remove_interest(interest, filename) {
-
-}
-
-
-function find_interest(interest_name, topic) {
-	for (child in topic.children)
-		if (topic.children[child].name == interest_name)
-			return topic.children[child];
-	return null;
-}
-
-function find_word(interest_name, word_name, currentNode) {
-	var interest = find_interest(interest_name, currentNode);
-	if (interest == null)
-		return null;
-	for (child in interest.children)
-		if (interest.children[child].name == word_name)
-			return interest.children[child].name;
-	return null;
-}
-
-function update_data(socket, filename) {
-	var data = get_data(filename);
-	if (data)
-		socket.emit("update data", data);
-}
-
-function get_data(filename) {
-	return JSON.parse(fs.readFileSync(filename, "utf8"));
-}
-
-function write_data(filename, datas) {
-	fs.writeFileSync(filename, JSON.stringify(datas));
-}
 
 
