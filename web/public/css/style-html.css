@@ -178,11 +178,11 @@
   pointer-events: all;
 }
 
-.screen[data-view="word"] .bubble--word:not(.current) {
+.screen[data-view="word"] .bubble--word:not(.current, .related) {
   opacity:.2;
 }
 
-.screen[data-view="word"] .bubble--word:not(.current) .bubble-scale {
+.screen[data-view="word"] .bubble--word:not(.current, .related) .bubble-scale {
   transform:scale(0.5);
 }
 
