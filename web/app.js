@@ -1,11 +1,13 @@
 var express = require('express');
 var app = express();
 var fs = require('fs');
-//var server = require('https').createServer({
-//  key: fs.readFileSync('certs/ssl-cert-snakeoil.key'),
-//  cert: fs.readFileSync('certs/ssl-cert-snakeoil.pem')
-//}, app);
-var server = require('http').createServer(app);
+// Online
+var server = require('https').createServer({
+  key: fs.readFileSync('certs/ssl-cert-snakeoil.key'),
+  cert: fs.readFileSync('certs/ssl-cert-snakeoil.pem')
+}, app);
+// Localhost
+// var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 
 var path = require('path');
