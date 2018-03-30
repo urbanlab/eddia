@@ -132,8 +132,6 @@ io.on('connection', function(socket) {
 	});
 	
 	socket.on('transcription/send', function(transcription) {
-		console.log(transcription);
-		console.log(model_interest_words["travail"]);
 		for (interest_index in model_interest_words["travail"]) { // For each interest
 			for (words_index in model_interest_words["travail"][interest_index]) { // For each words in interests
 				if (transcription.indexOf(model_interest_words["travail"][interest_index][words_index]) != -1) {
@@ -162,14 +160,11 @@ io.on('connection', function(socket) {
 	});
 	function remove_word(word, filename) {
 	       	var datas = get_data(filename);
-		console.log("datas", datas);
-		console.log("word.interest", word.interest);
 		for (child in datas.children) {
 			if (datas.children[child].name === word.interest)
 				for (words_index in datas.children[child].children) {
 					if (datas.children[child].children[words_index].name === word.name) {
 						datas.children[child].children.splice(words_index, 1);
-						console.log("children", JSON.stringify(datas.children[child]));
 					}
 				}
 		}
