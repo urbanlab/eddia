@@ -1,9 +1,20 @@
+
+var audioContext = null;
+var meter = null;
+var rafID = null;
+var mediaStreamSource = null;
+var recognizing = false;
+var recognition;
+
+var socket;
+
 var DOM_screen = $('.screen'),
     DOM_screenBackground = $('.screen-background'),
     screenW = DOM_screen.width(),
     screenH = DOM_screen.height();
 
-var maxBubbleScale = 3;
+var maxBubbleScale = 3,
+    minBubbleScale = .8;
 var removeZoneSize = 150; // width and height of delete zones
 
 var lastView = 'topic',
@@ -24,18 +35,17 @@ var wordPlaceholders = [
   [ 1570, 320 ],
 ];
 
-
 window.onload = function () {
   // Disable right click
 	document.addEventListener('contextmenu', event => event.preventDefault());
 
 	var url_array = document.location.pathname.split('/');
 	var room = url_array[1];
-	var socket = io();
+	socket = io();
 	var once = 1;
 
 	socket.emit('room', {
-	    	"client": "app",
+  	"client": "app",
 		"room_id": room
 	});
 
@@ -50,7 +60,96 @@ window.onload = function () {
 		createBubble(bubble.type, bubble.bubble);
 	});
 
+	window.AudioContext = window.AudioContext || window.webkitAudioContext;
+	audioContext = new AudioContext();
+	try {
+		navigator.getUserMedia =
+			navigator.getUserMedia ||
+			navigator.webkitGetUserMedia ||
+			navigator.mozGetUserMedia;
+		navigator.getUserMedia(
+		{
+			"audio": {
+				"mandatory": {
+					"googEchoCancellation": "false",
+					"googAutoGainControl": "false",
+					"googNoiseSuppression": "false",
+					"googHighpassFilter": "false"
+				},
+			"optional": []
+			},
+		}, gotStream, didntGetStream);
+	} catch (e) {
+		alert('getUserMedia threw exception :' + e);
+	}
+
 	init_microphone(socket);
+}
+
+/* MICROPHONE */
+
+function createAudioMeter(audioContext,clipLevel,averaging,clipLag) {
+	var processor = audioContext.createScriptProcessor(512);
+	processor.onaudioprocess = volumeAudioProcess;
+	processor.clipping = false;
+	processor.lastClip = 0;
+	processor.volume = 0;
+	processor.clipLevel = clipLevel || 0.98;
+	processor.averaging = averaging || 0.95;
+	processor.clipLag = clipLag || 750;
+	processor.connect(audioContext.destination);
+
+	processor.checkClipping = function() {
+		if (!this.clipping)
+			return false;
+		if ((this.lastClip + this.clipLag) < window.performance.now())
+			this.clipping = false;
+		return this.clipping;
+	};
+	processor.shutdown = function() {
+		this.disconnect();
+		this.onaudioprocess = null;
+	};
+	return processor;
+}
+
+function volumeAudioProcess( event ) {
+	var buf = event.inputBuffer.getChannelData(0);
+	var bufLength = buf.length;
+	var sum = 0;
+	var x;
+	for (var i=0; i<bufLength; i++) {
+		x = buf[i];
+		if (Math.abs(x)>=this.clipLevel) {
+			this.clipping = true;
+			this.lastClip = window.performance.now();
+		}
+		sum += x * x;
+	}
+	var rms =  Math.sqrt(sum / bufLength);
+	this.volume = Math.max(rms, this.volume*this.averaging);
+}
+
+function didntGetStream() {
+	alert('Stream generation failed.');
+}
+
+function gotStream(stream) {
+	mediaStreamSource = audioContext.createMediaStreamSource(stream);
+	meter = createAudioMeter(audioContext);
+	mediaStreamSource.connect(meter);
+	listenLoop();
+}
+
+function listenLoop() {
+      	if (meter.volume < 0.01) {
+		recognition.stop();
+	} else {
+		if (!recognizing) {
+			recognition.start();
+		}
+	}
+	rafID = window.requestAnimationFrame( listenLoop );
 }
 
 function init_microphone(socket) {
@@ -58,33 +157,48 @@ function init_microphone(socket) {
 		upgrade();
 	} else {
 		var transcription = '';
-		var recognition = new webkitSpeechRecognition();
+		recognition = new webkitSpeechRecognition();
 		recognition.continuous = true;
-		recognition.interimResults = false;
+		recognition.interimResults = true;
 		recognition.lang = 'fr-FR';
 		recognition.start();
 
 		recognition.onstart = function() {
 			console.log('Recognition started');
+			recognizing = true;
 		}
 
 		recognition.onresult = function(event) {
 			for (var i = event.resultIndex; i < event.results.length; ++i)
-				transcription += event.results[i][0].transcript;
+				if (event.results[i].isFinal) {
+					transcription += event.results[i][0].transcript;
+					console.log('FINAL', transcription);
+				} else {
+					console.log('INTERIM', event.results[i][0].transcript);
+				}
+			console.log('transcription:', transcription);
 			socket.emit('transcription/send', transcription);	
 		}
 
 		recognition.onerror = function(event) {
 			console.log('Recognition error');	
+			recognizing = false;
 		}
 
 		recognition.onend = function() {
 			console.log('Recognition finished. Should never happen');
+			recognizing = false;
+			if (!transcription)
+				return;
+			if (window.getSelection) {
+				window.getSelection().removeAllRanges();
+				document.createRange();
+			}
 		}
 	}
 }
 
-
+// Graphic
 
   function init(datas) {
    setView('topic');
@@ -107,7 +221,7 @@ function init_microphone(socket) {
         }
     }
 
-    // createBubble('content', { type: 'quote', word: 'Truc', content: 'Lorem ipsum dolor sit amet lorem ipsum' });
+    createBubble('content', { type: 'quote', word: 'Truc', content: 'La convention collective nationale pour l\'entreprise de la société accorde une journée pour père et mère quand l\'enfant entre pour la première fois à l\'école' });
     createBubble('content', { type: 'image', word: 'Truc', content: 'Texte de loi n°2', file: '/img/photo1.jpg' });
     createBubble('content', { type: 'image', word: 'Truc', content: 'Texte de loi n°4', file: '/img/photo1.jpg' });
 
@@ -184,7 +298,7 @@ function init_microphone(socket) {
     bubble
       .data('scale', newScale)
       .find('.bubble-scale').css({
-        transform: 'scale('+Math.min(newScale, maxBubbleScale)+')'
+        transform: 'scale('+Math.min(Math.max(newScale, minBubbleScale), maxBubbleScale)+')'
       });
   }
 
@@ -355,6 +469,7 @@ function init_microphone(socket) {
       DOM_bubble
         .attr('data-word', d.word)
         .attr('data-interet', d.interet)
+        .attr('data-content-type', d.type);
     }
 
     if (type == 'word') {
@@ -433,7 +548,7 @@ function init_microphone(socket) {
           });
 
           if (event.type == 'pinch') {
-            var currentScale = Math.min($(target).data('scale') * event.gesture.scale, maxBubbleScale);
+            var currentScale = Math.min(Math.max($(target).data('scale') * event.gesture.scale, minBubbleScale), maxBubbleScale);
 
             var diff = $(target).data('startrotation') - event.gesture.rotation;
             var currentRotation = $(target).data('rotation') - diff;
@@ -504,6 +619,15 @@ function init_microphone(socket) {
         DOM_bubbleScale
           .append(DOM_bubbleThumbnail)
           .append(DOM_bubbleThumbnailLabel);
+      }
+
+      if (d.type == 'quote') {
+        var DOM_bubbleQuote = $('<div/>')
+          .addClass('bubble-quote')
+          .text(d.content);
+
+        DOM_bubbleScale
+          .append(DOM_bubbleQuote);
       }
     }
 
@@ -624,6 +748,7 @@ function init_microphone(socket) {
 
     setTimeout(function(){
       console.log(type);
+
       if (type == 'content') {
         $('.bubble--'+type+'[data-word="'+wordName+'"]').remove();
 
@@ -733,5 +858,3 @@ function init_microphone(socket) {
         });
     }
   }
-
-
