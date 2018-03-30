@@ -158,7 +158,7 @@ function init_microphone(socket) {
 		var transcription = '';
 		recognition = new webkitSpeechRecognition();
 		recognition.continuous = true;
-		recognition.interimResults = false;
+		recognition.interimResults = true;
 		recognition.lang = 'fr-FR';
 		recognition.start();
 
@@ -169,18 +169,25 @@ function init_microphone(socket) {
 
 		recognition.onresult = function(event) {
 			for (var i = event.resultIndex; i < event.results.length; ++i)
-				transcription += event.results[i][0].transcript;
+				if (event.results[i].isFinal) {
+					transcription += event.results[i][0].transcript;
+					console.log('FINAL', transcription);
+				} else {
+					console.log('INTERIM', event.results[i][0].transcript);
+				}
+			console.log('transcription:', transcription);
 			socket.emit('transcription/send', transcription);	
 		}
 
 		recognition.onerror = function(event) {
 			console.log('Recognition error');	
+			recognizing = false;
 		}
 
 		recognition.onend = function() {
 			console.log('Recognition finished. Should never happen');
 			recognizing = false;
-			if (!final_transcript)
+			if (!transcription)
 				return;
 			if (window.getSelection) {
 				window.getSelection().removeAllRanges();
