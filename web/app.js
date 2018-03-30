@@ -115,6 +115,7 @@ io.on('connection', function(socket) {
 			if (contents[index].word === new_content.word && contents[index].content === new_content.content)
 				return;
 		contents.contents.push(new_content);
+		write_data('datas/contents/' + room_id + ".json");
 		io.to(room_id).emit("bubble/add", {"type": "content", "bubble": new_content});
 	}
 
