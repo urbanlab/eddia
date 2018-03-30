@@ -1,6 +1,12 @@
+@font-face {
+ font-family: "Noto";
+ src: url("/fonts/NotoSerif-Regular.ttf");
+}
+
 * {
   box-sizing:border-box;
   user-select:none;
+  font-family:"Noto", sans-serif !important;
 }
 
 .screen {
