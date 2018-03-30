@@ -208,7 +208,11 @@ io.on('connection', function(socket) {
         }
         
         function get_data(filename) {
-        	return JSON.parse(fs.readFileSync(filename, "utf8"));
+		try {
+        		return JSON.parse(fs.readFileSync(filename, "utf8"));
+		} catch (err) {
+			return null;
+		}
         }
         
         function write_data(filename, datas) {
