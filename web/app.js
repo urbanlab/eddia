@@ -25,12 +25,14 @@ app.get('/', function(req, res, next) {
 var model_interest_words = require('./datas/words.json')
 
 var structs_path = "./datas/struct/";
+var contents_filename = "./datas/contents/";
 
 var id = 1;
 
 io.on('connection', function(socket) {
 	var room_id;
 	var filename;
+	var contents_filename;
 	var interests_found = {};
 
 	socket.on('get_room_id', function(client) {
@@ -51,10 +53,11 @@ io.on('connection', function(socket) {
 		else if (client.client !== "manager")
 			console.log("Error, socket.on('room')");
 		filename = structs_path + room_id + ".json";
+		contents_filename = contents_path + room_id + ".json";
 		if (client.client == "manager") {
 			console.log(filename);
 			write_data(filename, {"name": "Les horaires au travail", "children": []}); // Define a default scenario as a fallback (via a socket.emit from the manager)
-			write_data('./datas/contents/' + room_id + ".json", { "contents": [] });
+			write_data(contents_filename, { "contents": [] });
 		}
 		socket.join(room_id);
 	});
@@ -115,7 +118,7 @@ io.on('connection', function(socket) {
 			if (contents[index].word === new_content.word && contents[index].content === new_content.content)
 				return;
 		contents.contents.push(new_content);
-		write_data('datas/contents/' + room_id + ".json");
+		write_data(contents_filename, contents);
 		io.to(room_id).emit("bubble/add", {"type": "content", "bubble": new_content});
 	}
 
