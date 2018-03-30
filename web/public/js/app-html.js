@@ -13,7 +13,8 @@ var DOM_screen = $('.screen'),
     screenW = DOM_screen.width(),
     screenH = DOM_screen.height();
 
-var maxBubbleScale = 3;
+var maxBubbleScale = 3,
+    minBubbleScale = .8;
 var removeZoneSize = 150; // width and height of delete zones
 
 var lastView = 'topic',
@@ -44,7 +45,7 @@ window.onload = function () {
 	var once = 1;
 
 	socket.emit('room', {
-	    	"client": "app",
+  	"client": "app",
 		"room_id": room
 	});
 
@@ -130,11 +131,11 @@ function volumeAudioProcess( event ) {
 }
 
 function didntGetStream() {
-    	alert('Stream generation failed.');
+	alert('Stream generation failed.');
 }
 
 function gotStream(stream) {
-    	mediaStreamSource = audioContext.createMediaStreamSource(stream);
+	mediaStreamSource = audioContext.createMediaStreamSource(stream);
 	meter = createAudioMeter(audioContext);
 	mediaStreamSource.connect(meter);
 	listenLoop();
@@ -297,7 +298,7 @@ function init_microphone(socket) {
     bubble
       .data('scale', newScale)
       .find('.bubble-scale').css({
-        transform: 'scale('+Math.min(newScale, maxBubbleScale)+')'
+        transform: 'scale('+Math.min(Math.max(newScale, minBubbleScale), maxBubbleScale)+')'
       });
   }
 
@@ -546,7 +547,7 @@ function init_microphone(socket) {
           });
 
           if (event.type == 'pinch') {
-            var currentScale = Math.min($(target).data('scale') * event.gesture.scale, maxBubbleScale);
+            var currentScale = Math.min(Math.max($(target).data('scale') * event.gesture.scale, minBubbleScale), maxBubbleScale);
 
             var diff = $(target).data('startrotation') - event.gesture.rotation;
             var currentRotation = $(target).data('rotation') - diff;
@@ -847,5 +848,3 @@ function init_microphone(socket) {
         });
     }
   }
-
-
