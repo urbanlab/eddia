@@ -1,3 +1,13 @@
+
+var audioContext = null;
+var meter = null;
+var rafID = null;
+var mediaStreamSource = null;
+var recognizing = false;
+var recognition;
+
+var socket;
+
 var DOM_screen = $('.screen'),
     DOM_screenBackground = $('.screen-background'),
     screenW = DOM_screen.width(),
@@ -24,14 +34,13 @@ var wordPlaceholders = [
   [ 1570, 320 ],
 ];
 
-
 window.onload = function () {
   // Disable right click
 	document.addEventListener('contextmenu', event => event.preventDefault());
 
 	var url_array = document.location.pathname.split('/');
 	var room = url_array[1];
-	var socket = io();
+	socket = io();
 	var once = 1;
 
 	socket.emit('room', {
@@ -50,7 +59,96 @@ window.onload = function () {
 		createBubble(bubble.type, bubble.bubble);
 	});
 
+	window.AudioContext = window.AudioContext || window.webkitAudioContext;
+	audioContext = new AudioContext();
+	try {
+		navigator.getUserMedia =
+			navigator.getUserMedia ||
+			navigator.webkitGetUserMedia ||
+			navigator.mozGetUserMedia;
+		navigator.getUserMedia(
+		{
+			"audio": {
+				"mandatory": {
+					"googEchoCancellation": "false",
+					"googAutoGainControl": "false",
+					"googNoiseSuppression": "false",
+					"googHighpassFilter": "false"
+				},
+			"optional": []
+			},
+		}, gotStream, didntGetStream);
+	} catch (e) {
+		alert('getUserMedia threw exception :' + e);
+	}
+
 	init_microphone(socket);
+}
+
+/* MICROPHONE */
+
+function createAudioMeter(audioContext,clipLevel,averaging,clipLag) {
+	var processor = audioContext.createScriptProcessor(512);
+	processor.onaudioprocess = volumeAudioProcess;
+	processor.clipping = false;
+	processor.lastClip = 0;
+	processor.volume = 0;
+	processor.clipLevel = clipLevel || 0.98;
+	processor.averaging = averaging || 0.95;
+	processor.clipLag = clipLag || 750;
+	processor.connect(audioContext.destination);
+
+	processor.checkClipping = function() {
+		if (!this.clipping)
+			return false;
+		if ((this.lastClip + this.clipLag) < window.performance.now())
+			this.clipping = false;
+		return this.clipping;
+	};
+	processor.shutdown = function() {
+		this.disconnect();
+		this.onaudioprocess = null;
+	};
+	return processor;
+}
+
+function volumeAudioProcess( event ) {
+	var buf = event.inputBuffer.getChannelData(0);
+	var bufLength = buf.length;
+	var sum = 0;
+	var x;
+	for (var i=0; i<bufLength; i++) {
+		x = buf[i];
+		if (Math.abs(x)>=this.clipLevel) {
+			this.clipping = true;
+			this.lastClip = window.performance.now();
+		}
+		sum += x * x;
+	}
+	var rms =  Math.sqrt(sum / bufLength);
+	this.volume = Math.max(rms, this.volume*this.averaging);
+}
+
+function didntGetStream() {
+    	alert('Stream generation failed.');
+}
+
+function gotStream(stream) {
+    	mediaStreamSource = audioContext.createMediaStreamSource(stream);
+	meter = createAudioMeter(audioContext);
+	mediaStreamSource.connect(meter);
+	listenLoop();
+}
+
+function listenLoop() {
+      	if (meter.volume < 0.01) {
+		recognition.stop();
+	} else {
+		if (!recognizing) {
+			recognition.start();
+		}
+	}
+	rafID = window.requestAnimationFrame( listenLoop );
 }
 
 function init_microphone(socket) {
@@ -58,7 +156,7 @@ function init_microphone(socket) {
 		upgrade();
 	} else {
 		var transcription = '';
-		var recognition = new webkitSpeechRecognition();
+		recognition = new webkitSpeechRecognition();
 		recognition.continuous = true;
 		recognition.interimResults = false;
 		recognition.lang = 'fr-FR';
@@ -66,6 +164,7 @@ function init_microphone(socket) {
 
 		recognition.onstart = function() {
 			console.log('Recognition started');
+			recognizing = true;
 		}
 
 		recognition.onresult = function(event) {
@@ -80,11 +179,18 @@ function init_microphone(socket) {
 
 		recognition.onend = function() {
 			console.log('Recognition finished. Should never happen');
+			recognizing = false;
+			if (!final_transcript)
+				return;
+			if (window.getSelection) {
+				window.getSelection().removeAllRanges();
+				document.createRange();
+			}
 		}
 	}
 }
 
-
+// Graphic
 
   function init(datas) {
    setView('topic');

@@ -173,3 +173,5 @@ function get_data(filename) {
 function write_data(filename, datas) {
 	fs.writeFileSync(filename, JSON.stringify(datas));
 }
+
+
