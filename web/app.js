@@ -213,13 +213,7 @@ function remove_word(word, filename) {
 	}
 	
 	function get_data(filename) {
-		try {
 		return JSON.parse(fs.readFileSync(filename, "utf8"));
-		} catch (err) {
-			write_data(filename, {"name": "Les horaires au travail", "children": []}); // Define a default scenario as a fallback (via a socket.emit from the manager)
-			write_data('./datas/contents/' + room_id + ".json", { "contents": [] });
-			return get_data(filename);
-		}
 	}
 	
 	function write_data(filename, datas) {
