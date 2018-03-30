@@ -35,12 +35,14 @@ var wordPlaceholders = [
   [ 1570, 320 ],
 ];
 
+var room;
+
 window.onload = function () {
   // Disable right click
 	document.addEventListener('contextmenu', event => event.preventDefault());
 
 	var url_array = document.location.pathname.split('/');
-	var room = url_array[1];
+	room = url_array[1];
 	socket = io();
 	var once = 1;
 
@@ -178,12 +180,12 @@ function init_microphone(socket) {
 					console.log('INTERIM', event.results[i][0].transcript);
 				}
 			console.log('transcription:', transcription);
-			socket.emit('transcription/send', transcription);	
+			socket.emit('transcription/send', transcription);
 			transcription = '';
 		}
 
 		recognition.onerror = function(event) {
-			console.log('Recognition error');	
+			console.log('Recognition error');
 			recognizing = false;
 		}
 
@@ -739,7 +741,8 @@ function init_microphone(socket) {
       type: type,
       interest: interestName,
       word: wordName,
-      name: name
+      name: name,
+      roomId: room
     });
 
     if (type == 'content') {
