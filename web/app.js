@@ -46,7 +46,7 @@ io.on('connection', function(socket) {
 		filename = structs_path + room_id + ".json";
 		if (client.client == "manager") {
 			console.log(filename);
-			write_data(filename, {"name": "Retard au travail", "children": []});
+			write_data(filename, {"name": "Retard au travail", "children": []}); // Define a default scenario as a fallback (via a socket.emit from the manager)
 		}
 		socket.join(room_id);
 	});
@@ -102,7 +102,7 @@ io.on('connection', function(socket) {
 		write_data(filename, datas);
 		io.to(room_id).emit("bubble/add", {"type": "content", "bubble": new_content});
 	});
-	
+
 	socket.on('get_data', function() {
 		socket.emit('get_data', get_data(filename));
 	});
@@ -122,15 +122,15 @@ io.on('connection', function(socket) {
 server.listen(3000);
 
 function remove_word(word) {
-	
+
 }
 
 function remove_content(content) {
-	
+
 }
 
 function remove_interest(interest) {
-	
+
 }
 
 
