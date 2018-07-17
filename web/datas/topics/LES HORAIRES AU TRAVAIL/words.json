@@ -1,7 +1,7 @@
 {
-  "travail": {
     "adaptabilité des horaires": [
       "flexibilité",
+      "contrainte",
       "souplesse",
       "adapter",
       "capacité",
@@ -40,7 +40,8 @@
       "régulation",
       "petite route",
       "désengorger",
-      "accident"
+      "accident",
+      "télétravail"
     ],
     "déséquilibre du temps de travail": [
       "crise",
@@ -120,7 +121,7 @@
       "discorde",
       "division"
     ],
-    "meilleur répartition du travail": [
+    "meilleure répartition du travail": [
       "gain de temps",
       "distribution",
       "inégalité",
@@ -156,6 +157,7 @@
       "union"
     ],
     "optimisation du travail": [
+      "organisation",
       "amélioration",
       "solution",
       "résolution",
@@ -272,7 +274,7 @@
 
     ],
     "horaire": [
-	   "horaire",
+      "horaire",
       "heure",
       "arrivé",
       "matin",
@@ -285,6 +287,7 @@
       "arrivé plus",
       "retard",
       "tôt",
+      "tard",
       "plus tard",
       "calendrier",
       "emploi",
@@ -295,7 +298,7 @@
       "programme"
     ],
     "transport": [
-	    "train",
+      "train",
       "vélo",
       "cycliste",
       "piéton",
@@ -325,5 +328,4 @@
       "descriptif",
       "guidage"
     ]
-  }
 }

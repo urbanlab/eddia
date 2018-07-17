@@ -30,12 +30,13 @@
       <div class="delete-zone delete-zone-bottomleft"></div>
       <div class="delete-zone delete-zone-bottomright"></div>
     </div>
-
+    <audio controls src="/sounds/bip.wav" id='beep_sound'></audio>
+    <table class='topic-choice'></table>
   </div>
-
+toptop
   <div style="position:absolute;top:0;right:0;width:50px;height:50px;z-index:9999999999999" onclick="window.location.reload()"></div>
 
-  <div style="position:absolute;top:0;left:0;color:white;font-size:26px" class="console"></div>
+
 
   <script
   src="https://code.jquery.com/jquery-3.3.1.min.js"
@@ -48,14 +49,9 @@
   crossorigin="anonymous"></script>
 
   <script src="/socket.io/socket.io.js"></script>
-<!--
-  <script src="/js/touch-emulator.js"></script>
-  <script> TouchEmulator(); </script>
--->
   <script src="/js/hammer.min.js"></script>
   <script src="/js/jquery.hammer.js"></script>
   <script src="/js/jquery.ui.touch-punch.min.js"></script>
-  <!-- <script src="/js/jquery.easing.1.3.js"></script> -->
   <script src="/js/app-html.js"></script>
 </body>
 </html>

@@ -27,7 +27,14 @@
   right:0;
 }
 
-
+#beep_sound {
+  position:absolute;
+  top:0;
+  left:0;
+  bottom:0;
+  right:0;
+  visibility: hidden;
+}
 
 .eyes {
   position:absolute;
@@ -117,7 +124,66 @@
   background:radial-gradient(ellipse at top left, transparent,transparent,transparent, #a52a2a);
 }
 
+/*-------------------------------------------------------------*/
 
+.topic-choice {
+  top:0;
+  left:0;
+  position:absolute;
+  table-layout: fixed;
+  background:#006e8c;
+  border-style:double;
+  border-width:2px;
+  z-index:10000;
+}
+
+.topic-cell {
+  text-align: center;
+  vertical-align: middle;
+  color:white;
+  font-family:sans-serif;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  font-size:30px;
+  border-style:double;
+  border-width:2px;
+}
+
+.bottom {
+  width:1920px;
+  height:120px;
+  transform: translate(0px, calc(1080px - 120px));
+}
+
+.left {
+  width:1080px;
+  height:200px;
+  transform: translate(calc(200px / 2 - 1080px / 2), calc(1080px / 2 - 200px / 2)) rotate(90deg);
+  transform-origin: center center;
+}
+
+.top {
+  width:1920px;
+  height:120px;
+  transform: rotate(180deg);
+  transform-origin: center center;
+}
+.right {
+  width:1080px;
+  height:200px;
+  transform: translate(calc(1920px - 200px / 2 - 1080px / 2), calc(1080px / 2 - 200px / 2)) rotate(-90deg);
+  transform-origin: center center;
+}
+
+.topics-visible {
+  display:table;
+}
+
+.topics-invisible {
+  display:none;
+}
+
+/*-------------------------------------------------------------*/
 
 .layer {
   position:absolute;
@@ -282,13 +348,14 @@
 }
 
 .bubble--topic .bubble-background {
-  /* background:#006e8c; */
+   /* background:#006e8c; */ 
 }
 
 .bubble--topic .bubble-inner {
   text-transform:uppercase;
   color:white;
   font-size:32px;
+
 }
 
 

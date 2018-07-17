@@ -1,4 +1,3 @@
-
 var audioContext = null;
 var meter = null;
 var rafID = null;
@@ -12,6 +11,9 @@ var DOM_screen = $('.screen'),
     DOM_screenBackground = $('.screen-background'),
     screenW = DOM_screen.width(),
     screenH = DOM_screen.height();
+
+var L_logo = 100, H_logo = 100;
+var x_logo = 5, y_logo = screenH - H_logo -10;
 
 var maxBubbleScale = 3,
     minBubbleScale = .8;
@@ -35,125 +37,70 @@ var wordPlaceholders = [
   [ 1570, 320 ],
 ];
 
-var room;
+var block_acquisition = true;
+var mode_ajout_mots = false;
+var transcription_ordre = '';
+
+var topics;
+var current_topic;
 
 window.onload = function () {
   // Disable right click
 	document.addEventListener('contextmenu', event => event.preventDefault());
 
-	var url_array = document.location.pathname.split('/');
-	room = url_array[1];
-	socket = io();
-	var once = 1;
+	var url_array = decodeURI(document.location.pathname).split('/');
+  var topic = url_array[1];
+    	room = url_array[2];
+  
+  socket = io();
 
 	socket.emit('room', {
-  	"client": "app",
+  	"topic": topic,
 		"room_id": room
 	});
 
 	socket.emit('get_data');
 
-	socket.on('get_data', function(datas) {
-		init(datas);
-	});
+  socket.on('topics', function(topics_data) {
+    topics = topics_data.topic_list;
+    current_topic = topics_data.current_topic;
+    init_microphone(socket);
 
-	socket.on('bubble/add', function(bubble) {
-		console.log("on('bubble/add')", bubble);
-		createBubble(bubble.type, bubble.bubble);
-	});
+    socket.on('get_data', function(datas) {
+      init(datas);
+    });
 
-	window.AudioContext = window.AudioContext || window.webkitAudioContext;
-	audioContext = new AudioContext();
-	try {
-		navigator.getUserMedia =
-			navigator.getUserMedia ||
-			navigator.webkitGetUserMedia ||
-			navigator.mozGetUserMedia;
-		navigator.getUserMedia(
-		{
-			"audio": {
-				"mandatory": {
-					"googEchoCancellation": "false",
-					"googAutoGainControl": "false",
-					"googNoiseSuppression": "false",
-					"googHighpassFilter": "false"
-				},
-			"optional": []
-			},
-		}, gotStream, didntGetStream);
-	} catch (e) {
-		alert('getUserMedia threw exception :' + e);
-	}
+    socket.on('bubble/add', function(bubble) {
+      console.log("on('bubble/add')", bubble);
+      createBubble(bubble);
+    });
 
-	init_microphone(socket);
+    window.AudioContext = window.AudioContext || window.webkitAudioContext;
+    audioContext = new AudioContext();
+    try {
+      navigator.getUserMedia =
+        navigator.getUserMedia ||
+        navigator.webkitGetUserMedia ||
+        navigator.mozGetUserMedia;
+      navigator.getUserMedia(
+      {
+        "audio": {
+          "mandatory": {
+            "googEchoCancellation": "false",
+            "googAutoGainControl": "false",
+            "googNoiseSuppression": "false",
+            "googHighpassFilter": "false"
+          },
+        "optional": []
+        },
+      }, () => console.log('Got audio stream'), () => alert('Stream generation failed.'));
+    } catch (e) {
+      alert('getUserMedia threw exception :' + e);
+    }
+  });
 }
 
-/* MICROPHONE */
-
-function createAudioMeter(audioContext,clipLevel,averaging,clipLag) {
-	var processor = audioContext.createScriptProcessor(512);
-	processor.onaudioprocess = volumeAudioProcess;
-	processor.clipping = false;
-	processor.lastClip = 0;
-	processor.volume = 0;
-	processor.clipLevel = clipLevel || 0.98;
-	processor.averaging = averaging || 0.95;
-	processor.clipLag = clipLag || 750;
-	processor.connect(audioContext.destination);
-
-	processor.checkClipping = function() {
-		if (!this.clipping)
-			return false;
-		if ((this.lastClip + this.clipLag) < window.performance.now())
-			this.clipping = false;
-		return this.clipping;
-	};
-	processor.shutdown = function() {
-		this.disconnect();
-		this.onaudioprocess = null;
-	};
-	return processor;
-}
-
-function volumeAudioProcess( event ) {
-	var buf = event.inputBuffer.getChannelData(0);
-	var bufLength = buf.length;
-	var sum = 0;
-	var x;
-	for (var i=0; i<bufLength; i++) {
-		x = buf[i];
-		if (Math.abs(x)>=this.clipLevel) {
-			this.clipping = true;
-			this.lastClip = window.performance.now();
-		}
-		sum += x * x;
-	}
-	var rms =  Math.sqrt(sum / bufLength);
-	this.volume = Math.max(rms, this.volume*this.averaging);
-}
-
-function didntGetStream() {
-	alert('Stream generation failed.');
-}
-
-function gotStream(stream) {
-	mediaStreamSource = audioContext.createMediaStreamSource(stream);
-	meter = createAudioMeter(audioContext);
-	mediaStreamSource.connect(meter);
-	listenLoop();
-}
-
-function listenLoop() {
-	console.log('meter.volume', meter.volume);
-      	if (meter.volume < 0.02) {
-		recognition.stop();
-	} else {
-		if (!recognizing) {
-			recognition.start();
-		}
-	}
-	rafID = window.requestAnimationFrame( listenLoop );
-}
+//----------------------------------------------------------------------------------------------------------------
 
 function init_microphone(socket) {
 	if (!('webkitSpeechRecognition' in window)) {
@@ -172,16 +119,26 @@ function init_microphone(socket) {
 		}
 
 		recognition.onresult = function(event) {
-			for (var i = event.resultIndex; i < event.results.length; ++i)
-				if (event.results[i].isFinal) {
-					transcription += event.results[i][0].transcript;
-					console.log('FINAL', transcription);
-				} else {
-					console.log('INTERIM', event.results[i][0].transcript);
-				}
-			console.log('transcription:', transcription);
-			socket.emit('transcription/send', transcription);
-			transcription = '';
+      if(block_acquisition) {
+        return
+      };
+      if(mode_ajout_mots) {
+        for (var i = event.resultIndex; i < event.results.length; ++i)
+          if (event.results[i].isFinal) {
+            transcription_ordre += (event.results[i][0].transcript + ' ');
+          }
+      } else {
+  			for (var i = event.resultIndex; i < event.results.length; ++i)
+  				if (event.results[i].isFinal) {
+  					transcription += event.results[i][0].transcript;
+  				};
+        if (transcription != '') {
+    			console.log('transcription:', transcription);
+    			socket.emit('transcription/send', transcription);
+    			transcription = '';
+          recognition.stop();
+        };
+      };
 		}
 
 		recognition.onerror = function(event) {
@@ -190,23 +147,57 @@ function init_microphone(socket) {
 		}
 
 		recognition.onend = function() {
-			console.log('Recognition finished. Should never happen');
+			console.log('Recognition finished.');
 			recognizing = false;
-			if (!transcription)
-				return;
-			if (window.getSelection) {
-				window.getSelection().removeAllRanges();
-				document.createRange();
-			}
+      recognition.start();
 		}
 	}
 }
 
+//----------------------------------------------------------------------------------------------------------------
 // Graphic
+//----------------------------------------------------------------------------------------------------------------
 
   function init(datas) {
-   setView('topic');
-   setEye('bottom');
+    var speak_logo = $('<img/>')
+      .addClass('add_word_icon')
+      .attr('src', '/img/logo_parler_simple.png')
+      .attr({width:String(L_logo), height:String(H_logo)})
+      .attr('draggable', false)
+      .css({"transform": 'translate(' + String(x_logo) + 'px, ' + String(y_logo) + 'px)'})
+      .css('position', 'absolute')
+      .css('z-index', 9999);
+
+    $('.screen').append(speak_logo);
+
+    speak_logo.on('click', function() {
+      if(!mode_ajout_mots) {
+        $("#beep_sound")[0].play(); // émettre un 'bip'
+        mode_ajout_mots = true;
+        setTimeout(function() {
+          socket.emit('voice/add_new_word', transcription_ordre);
+          mode_ajout_mots = false;
+          transcription_ordre = '';
+          $("#beep_sound")[0].play(); // émettre un 'bip'
+        }, 8000);
+      }
+    });
+
+    var toggleListeningLogo = $('<img/>')
+      .addClass('toggle_listening_icon')
+      .attr('src', '/img/micro_barre.png')
+      .attr({width:String(L_logo), height:String(H_logo)})
+      .attr('draggable', false)
+      .css({"transform": 'translate(' + String(screenW - x_logo - L_logo) + 'px, ' + String(y_logo) + 'px)'})
+      .css('position', 'absolute')
+      .css('z-index', 9999);
+
+    toggleListeningLogo.on('click', function() {
+      block_acquisition = !block_acquisition;
+      $('.toggle_listening_icon').attr('src', {true:'/img/micro_barre.png', false:'/img/micro_fonctionnel.png'}[String(block_acquisition)]);
+    })
+
+    $('.screen').append(toggleListeningLogo);
 
     DOM_screenBackground.on('click', function(e){
       setPreviousView();
@@ -216,52 +207,53 @@ function init_microphone(socket) {
       setEye($(this).data('side'));
     });
 
-    createBubble('topic', { name: datas.name });
+    createBubble({"type":"topic", 'topic':current_topic});
+    for(interest in datas[current_topic]) {
+      createBubble({"type":"interest", "topic":current_topic, "interest": interest});
+      for(word in datas[current_topic][interest]) {
+  	    createBubble({"type":"word", "topic":current_topic, "interest": interest, "word": word});
+        for(const content of datas[current_topic][interest][word]) {
+          createBubble({"type":"content", "topic":current_topic, "interest":interest, "word": word,"content":content});
+        };
+      };
+    };
 
-    for (child in datas.children) {
-      createBubble('interest', {"name": datas.children[child].name});
-        for (word in datas.children[child].children) {
-  	       createBubble('word', {"name": datas.children[child].children[word].name, "interest": datas.children[child].name});
-        }
-    }
+    for(var i=0; i < topics.length; i++) {
+      if(topics[i] != current_topic) {
+        var topic_cell = $('<td/>')
+          .addClass('topic-cell')
+          .html(topics[i]);
+        topic_cell.on('click', function() {location.href = '/' + $(this).html()});
+        $('.topic-choice').append(topic_cell);
+      };
+      $('.topic-choice').addClass('topics-invisible');
+    };
 
-    //createBubble('content', { type: 'quote', word: 'Truc', content: 'La convention collective nationale pour l\'entreprise de la société accorde une journée pour père et mère quand l\'enfant entre pour la première fois à l\'école' });
-    //createBubble('content', { type: 'image', word: 'Truc', content: 'Texte de loi n°2', file: '/img/photo1.jpg' });
-    //createBubble('content', { type: 'image', word: 'Truc', content: 'Texte de loi n°4', file: '/img/photo1.jpg' });
+    $('.bubble--topic .bubble-inner').on('click', function() {
+      if ($('.topic-choice').hasClass('topics-invisible')) {
+        $('.topic-choice').removeClass('topics-invisible');
+        $('.topic-choice').addClass('topics-visible');
+      };
+    });
 
-    /*createBubble('interest', { name: 'Transports' });
-    createBubble('interest', { name: 'Imprévus externes' });
+    $('.screen').on('click', function(event) {
+      if (!$(event.target).closest('.topic-choice').length &&
+          !$(event.target).closest('.bubble--topic').length &&
+          !$(event.target).closest('.bubble-inner').length) {
+        if ($('.topic-choice').hasClass('topics-visible')) {
+          $('.topic-choice').removeClass('topics-visible');
+          $('.topic-choice').addClass('topics-invisible');
+        };
 
-    createBubble('word', { name: 'Imprévu 1', interest: 'Imprévus externes' });
-    createBubble('word', { name: 'Imprévu 2', interest: 'Imprévus externes' });
-    createBubble('word', { name: 'Imprévu 3', interest: 'Imprévus externes' });
+      };
+    });
 
-    createBubble('word', { name: 'Transports 1', interest: 'Transports' });
-    createBubble('word', { name: 'Transports 2', interest: 'Transports' });
-    createBubble('word', { name: 'Transports 3', interest: 'Transports' });
-    createBubble('word', { name: 'Transports 4', interest: 'Transports' });
-    createBubble('word', { name: 'Transports 5', interest: 'Transports' });
-    createBubble('word', { name: 'Transports 6', interest: 'Transports' });
-    createBubble('word', { name: 'Transports 7', interest: 'Transports' });
-    createBubble('word', { name: 'Transports 8', interest: 'Transports' });
+    setView('topic');
+    setEye('bottom');
 
-    createBubble('word', { name: 'Imprévu 1sfsfsef', interest: 'Imprévus internes' });
-    createBubble('word', { name: 'Imprévu 2 sdfds fdsfd sds dsfdsf', interest: 'Imprévus internes' });
-    createBubble('word', { name: 'Imprévu sdf dsf dsf dsf ds f sd fd3', interest: 'Imprévus internes' });
-
-    setTimeout(function(){
-      createBubble('interest', { name: 'Imprévus internes' });
-    }, 1500);
-    */
-    //
-    // setTimeout(function(){
-    //   changeBubbleSize('inc', { type: 'interest', name: 'Transports' });
-    //   changeBubbleSize('inc', { type: 'interest', name: 'Transports' });
-    //   changeBubbleSize('inc', { type: 'interest', name: 'Transports' });
-    // },1000);
-
-    // setView('interest', { name: 'Imprévus externes' });
   }
+
+//----------------------------------------------------------------------------------------------------------------
 
   function setEye(side) {
     DOM_screen.attr('data-eye-side', side);
@@ -282,10 +274,26 @@ function init_microphone(socket) {
 
     $('.bubble--word')
       .data('rotation', defaultRotation);
-  }
+
+    var new_x_logo = {'bottom':x_logo, 'left': x_logo, 'right':screenW - L_logo - x_logo, 'top':screenW - L_logo - x_logo}[side],
+        new_y_logo = {'bottom':y_logo, 'left': screenH - H_logo - y_logo, 'right':y_logo, 'top':screenH - H_logo - y_logo}[side];
+    $('.add_word_icon').css({"transform": 'translate(' + String(new_x_logo) + 'px, ' + String(new_y_logo) + 'px)'});
+
+    var new_x_micro = {'bottom':screenW - L_logo - x_logo, 'left':x_logo, 'right':screenW - L_logo - x_logo, 'top':x_logo}[side],
+        new_y_micro = {'bottom':y_logo, 'left':y_logo, 'right':screenH - H_logo - y_logo, 'top':screenH - H_logo - y_logo}[side];
+    $('.toggle_listening_icon').css({"transform": 'translate(' + String(new_x_micro) + 'px, ' + String(new_y_micro) + 'px)' + ' rotate(' + String(sides[side]) +'deg)'});
 
 
+    for(s in sides) {
+      if(s == side) {
+        $('.topic-choice').addClass(s);
+      } else if($('.topic-choice').hasClass(s)) {
+        $('.topic-choice').removeClass(s);
+      };
+    };
+  };
 
+//----------------------------------------------------------------------------------------------------------------
 
   function changeBubbleSize(mode, d) {
     var changeDiff = .1;
@@ -307,7 +315,7 @@ function init_microphone(socket) {
   }
 
 
-
+//----------------------------------------------------------------------------------------------------------------
 
   function setPreviousView() {
     var view = DOM_screen.attr('data-view');
@@ -386,7 +394,7 @@ function init_microphone(socket) {
 
     if (v == 'word') {
       var interestBubble = $('.bubble--interest[data-name="'+d.interest+'"]');
-      var wordBubble = $('.bubble--word[data-name="'+d.name+'"]');
+      var wordBubble = $('.bubble--word[data-name="'+d.name+'"][data-interest="'+d.interest+'"]');
 
       $('.bubble--interest').removeClass('current');
       $('.bubble--word').removeClass('current');
@@ -426,23 +434,27 @@ function init_microphone(socket) {
   }
 
 
+//----------------------------------------------------------------------------------------------------------------
 
+  function createBubble(d) {
 
-  function createBubble(_type, d) {
-    var type = _type;
+    if(d.name == undefined && d.type != 'content') {d.name = d[d.type]};
 
     var DOM_bubble = $('<div/>')
-      .addClass('bubble bubble--'+type)
+      .addClass('bubble bubble--'+d.type)
       .attr('data-name', d.name)
-      .attr('data-type', type)
+      .attr('data-type', d.type)
+      .attr('data-word', d.word)
+      .attr('data-interest', d.interest)
       .data('scale', 1)
 
+
       .on('click', function(){
-        if (type == 'topic') {
+        if (d.type == 'topic') {
           setView('topic');
         }
 
-        if (type == 'interest') {
+        if (d.type == 'interest') {
           if ($(this).hasClass('current')) {
             setView('topic');
           } else {
@@ -450,7 +462,7 @@ function init_microphone(socket) {
           }
         }
 
-        if (type == 'word') {
+        if (d.type == 'word') {
           if ($(this).hasClass('current')) {
             setView('interest', { name: d.interest });
           } else {
@@ -458,8 +470,8 @@ function init_microphone(socket) {
           }
         }
 
-        if (type == 'content') {
-          if (d.type == 'image') {
+        if (d.type == 'content') {
+          if (d.content.type == 'image') {
             if ($(this).hasClass('current')) {
               hideContentImage($(this));
             } else {
@@ -469,14 +481,15 @@ function init_microphone(socket) {
         }
       });
 
-    if (type == 'content') {
+
+    if (d.type == 'content') {
       DOM_bubble
         .attr('data-word', d.word)
-        .attr('data-interet', d.interet)
-        .attr('data-content-type', d.type);
+        .attr('data-interest', d.interest)
+        .attr('data-content-type', d.content.type);
     }
 
-    if (type == 'word') {
+    if (d.type == 'word') {
       var placeholderIndex = $('.bubble--word[data-interest="'+d.interest+'"]').length || 0;
 
       if (placeholderIndex < wordPlaceholders.length) {
@@ -607,28 +620,28 @@ function init_microphone(socket) {
     var DOM_bubbleScale = $('<div/>')
       .addClass('bubble-scale');
 
-    if (type == 'content') {
-      if (d.type == 'image') {
+    if (d.type == 'content') {
+      if (d.content.type == 'image') {
         var DOM_bubbleThumbnail = $('<div/>')
           .addClass('bubble-thumbnail')
           .css({
-            'background-image':'url('+d.file+')',
+            'background-image':'url('+d.content.file+')',
             transform: 'rotate('+defaultRotation+'deg)'
           });
 
         var DOM_bubbleThumbnailLabel = $('<div/>')
           .addClass('bubble-thumbnail-label')
-          .text(d.content);
+          .text(d.content.content);
 
         DOM_bubbleScale
           .append(DOM_bubbleThumbnail)
           .append(DOM_bubbleThumbnailLabel);
       }
 
-      if (d.type == 'quote') {
+      if (d.content.type == 'quote') {
         var DOM_bubbleQuote = $('<div/>')
           .addClass('bubble-quote')
-          .text(d.content);
+          .text(d.content.content);
 
         DOM_bubbleScale
           .append(DOM_bubbleQuote);
@@ -682,7 +695,7 @@ function init_microphone(socket) {
 
     DOM_bubble
       .append(DOM_bubbleContainer)
-      .appendTo($('.layer--'+type));
+      .appendTo($('.layer--'+d.type));
 
     setTimeout(function(){
       DOM_bubble
@@ -691,6 +704,8 @@ function init_microphone(socket) {
       updateView();
     },100);
   }
+
+  //----------------------------------------------------------------------------------------------------------------
 
   function updateView() {
     if (currentView == 'topic') {
@@ -706,78 +721,45 @@ function init_microphone(socket) {
     }
   }
 
-
+//----------------------------------------------------------------------------------------------------------------
 
   function showContentImage(b) {
     console.log('showContentImage');
     b.addClass('current');
   }
 
-  function hideContentImage(b) {
+  function hideContentImage(b) { 
     b.removeClass('current');
   }
 
 
-  function removeBubble(b, silent = false) {
-    var setViewAfterRemove = (silent == false) ? true : false;
+  //----------------------------------------------------------------------------------------------------------------
+
+
+  function removeBubble(b) {
     var type = b.data('type');
+    var interest = b.data('interest');
+    var word = b.data('word');
     var name = b.data('name');
-    var wordName = null;
 
-    if (type == 'word') {
-      var interestName = b.data('interest');
-
-      $('.bubble--content[data-word="'+name+'"]').each(function(){
-        removeBubble($(this), true);
-      });
-    }
-
-    if (type == 'content') {
-      var interestName = b.data('interest');
-      var wordName = b.data('word');
-    }
-
-    socket.emit('bubble/remove', {
-      type: type,
-      interest: interestName,
-      word: wordName,
-      name: name
+    $('.bubble--content[data-word="'+word+'"][data-interest="'+interest+'"]').addClass('deleted');
+    $('.bubble--word[data-word="'+word+'"][data-interest="'+interest+'"]').addClass('deleted');
+    socket.emit('bubble/word/remove', {  // The server side handles the deletion of the word and of the corresponding interest if needed
+      'interest': interest,
+      'word': word,
     });
-
-    if (type == 'content') {
-      $('.bubble--'+type+'[data-word="'+wordName+'"]').addClass('deleted');
-    } else {
-      $('.bubble--'+type+'[data-name="'+name+'"]').addClass('deleted');
-    }
-
-    setTimeout(function(){
-      console.log(type);
-
-      if (type == 'content') {
-        $('.bubble--'+type+'[data-word="'+wordName+'"]').remove();
-
-        if (setViewAfterRemove == true) {
-          setView('word', { name: wordName });
-        }
-      } else {
-        $('.bubble--'+type+'[data-name="'+name+'"]').remove();
-
-        if (setViewAfterRemove == true) {
-          setPreviousView();
-          /*
-          if (type == 'word') {
-            setView('interest', { name: interestName });
-          }
-          if (type == 'interest') {
-            setView('topic');
-          }
-          */
-        }
-      }
-    },600);
+    setTimeout(function() {
+      $('.bubble--content[data-word="'+word+'"][data-interest="'+interest+'"]').remove();
+      $('.bubble--word[data-word="'+word+'"][data-interest="'+interest+'"]').remove();
+      if(!($('.bubble--word[data-interest="'+interest+'"]').length)) {
+        setView('topic');
+        $('.bubble--interest[data-interest="'+interest+'"]').addClass('deleted');
+        setTimeout(function() {$('.bubble--interest[data-interest="'+interest+'"]').remove()}, 600);
+      };
+    }, 600);
   }
 
-
+//----------------------------------------------------------------------------------------------------------------
 
   function setPositionOfContentBubblesInWordView() {
     var radius = 250;
