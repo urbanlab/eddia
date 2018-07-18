@@ -1,3 +1,2 @@
-*/node_modules
-web/datas/struct/*.json
-web/datas/contents/*.json
+./node_modules
+./datas/struct/*.json
