@@ -1,14 +1,23 @@
+/*------------------------------------------------------------------------------------*/
+/* Text display - global settings*/
+/*------------------------------------------------------------------------------------*/
+
+/* Fonts */
 @font-face {
  font-family: "Noto";
  src: url("/fonts/NotoSerif-Regular.ttf");
 }
 
+/* Text boxes style*/
 * {
   box-sizing:border-box;
   user-select:none;
   font-family:"Noto", sans-serif !important;
 }
 
+/*------------------------------------------------------------------------------------*/
+/* Canevas in the background */
+/*------------------------------------------------------------------------------------*/
 .screen {
   width:1920px;
   height:1080px;
@@ -27,7 +36,8 @@
   right:0;
 }
 
-#beep_sound {
+
+#beep_sound { /* Balise qui sert à émettre des bips, rendue invisible*/
   position:absolute;
   top:0;
   left:0;
@@ -36,6 +46,9 @@
   visibility: hidden;
 }
 
+/*------------------------------------------------------------------------------------*/
+/* Zones in the borders of the canevas, used in order to rotate the screen */
+/*------------------------------------------------------------------------------------*/
 .eyes {
   position:absolute;
   top:0;
@@ -75,8 +88,9 @@
   width: 50px;
 }
 
-
-
+/*------------------------------------------------------------------------------------*/
+/* Zones in the corners of the canevas, used in order to remove word bubbles */
+/*------------------------------------------------------------------------------------*/
 .delete-ui {
   position:absolute;
   top:0;
@@ -124,7 +138,9 @@
   background:radial-gradient(ellipse at top left, transparent,transparent,transparent, #a52a2a);
 }
 
-/*-------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------*/
+/* Table for choosing another conversation topic */
+/*------------------------------------------------------------------------------------*/
 
 .topic-choice {
   top:0;
@@ -149,7 +165,7 @@
   border-width:2px;
 }
 
-.bottom {
+.bottom { /* Handle the rotation of the table when the canvas rotates*/
   width:1920px;
   height:120px;
   transform: translate(0px, calc(1080px - 120px));
@@ -183,8 +199,17 @@
   display:none;
 }
 
-/*-------------------------------------------------------------*/
 
+/*------------------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------*/
+/* Handling and and displaying bubbles */
+/*------------------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------*/
+
+
+/*------------------------------------------------------------------------------------*/
+/* Layer system for the display of bubbles */
+/*------------------------------------------------------------------------------------*/
 .layer {
   position:absolute;
   top:0;
@@ -200,10 +225,6 @@
 .layer > * {
   pointer-events: all;
 }
-
-/* .layer--word {
-  transform:scale(0);
-} */
 
 .layer--word {
   z-index:25;
@@ -260,11 +281,11 @@
   transform:scale(1);
 }
 
-/* .screen[data-view="interest"] .layer--word {
-  transform:scale(1);
-} */
+/*------------------------------------------------------------------------------------*/
+/* Properties of all bubbles */
+/*------------------------------------------------------------------------------------*/
 
-.bubble {
+.bubble {  /*properties of the whole bubble */
   position:absolute;
   width:300px;
   height:300px;
@@ -274,7 +295,7 @@
   transition:all 600ms cubic-bezier(0.77, 0, 0.175, 1);
 }
 
-.bubble-container {
+.bubble-container { /* properties of the outer bubble */
   position:absolute;
   top:0;
   left:0;
@@ -283,7 +304,7 @@
   transition:all 600ms cubic-bezier(0.77, 0, 0.175, 1);
 }
 
-.bubble-scale {
+.bubble-scale { /* Class to change the size of bubbles */
   position:absolute;
   top:0;
   left:0;
@@ -296,11 +317,11 @@
   transition:all 600ms cubic-bezier(0.77, 0, 0.175, 1);
 }
 
-.bubble.exists .bubble-scale {
+.bubble.exists .bubble-scale { /* Class to change the size of bubbles */
   transform:scale(1);
 }
 
-.bubble-background {
+.bubble-background { /* Backgound of the bubble */
   position:absolute;
   top:0;
   left:0;
@@ -309,7 +330,7 @@
   border-radius:3000px;
 }
 
-.bubble-inner {
+.bubble-inner { /* center of the bubble, contains text */
   position:absolute;
   text-align:center;
   font-family:sans-serif;
@@ -318,30 +339,11 @@
   z-index:100;
   padding:20px;
   transition:all 600ms cubic-bezier(0.77, 0, 0.175, 1);
-  /* transition:all 1000ms ease; */
-}
-/*
-.screen[data-eye-side="top"] .bubble-inner {
-  transform: rotate(180deg);
 }
 
-.screen[data-eye-side="bottom"] .bubble-inner {
-  transform: rotate(0deg);
-}
-
-.screen[data-eye-side="left"] .bubble-inner {
-  transform: rotate(90deg);
-}
-
-.screen[data-eye-side="right"] .bubble-inner {
-  transform: rotate(-90deg);
-}
-*/
-
-
-
-
-/* TOPIC */
+/*------------------------------------------------------------------------------------*/
+/* Properties of the topic bubble (displays not as a bubble but as a title) */
+/*------------------------------------------------------------------------------------*/
 
 .bubble--topic {
   transform:translate(960px, 540px);
@@ -359,7 +361,9 @@
 }
 
 
-/* INTEREST */
+/*------------------------------------------------------------------------------------*/
+/* Properties of the interest bubbles */
+/*------------------------------------------------------------------------------------*/
 
 .bubble--interest {
   z-index:50;
@@ -367,7 +371,6 @@
 
 .bubble--interest .bubble-background {
   background:#50e6c8;
-  /* background:url(/img/interest2.svg) no-repeat center center / 100% auto; */
   z-index:10;
 }
 
@@ -415,7 +418,9 @@
 }
 
 
-/* WORD */
+/*------------------------------------------------------------------------------------*/
+/* Properties of the word bubbles */
+/*------------------------------------------------------------------------------------*/
 
 .bubble--word {
   transition:all 600ms cubic-bezier(0.77, 0, 0.175, 1);
@@ -458,7 +463,6 @@
 
 .bubble--word .bubble-background {
   background:#50e6c8;
-  /* background:url(/img/interest2.svg) no-repeat center center / 100% auto; */
   z-index:10;
   transform:scale(.3);
   margin:-200px;
@@ -553,7 +557,9 @@
 
 
 
-/* CONTENT */
+/*------------------------------------------------------------------------------------*/
+/* Properties of content bubbles that displaay on the top of selected word bubbles */
+/*------------------------------------------------------------------------------------*/
 
 .bubble--content {
   transition:all 600ms cubic-bezier(0.77, 0, 0.175, 1);
@@ -676,12 +682,16 @@
   transform:scale(1);
 }
 
+/*------------------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------*/
 
 
 
-
-
-
+/*------------------------------------------------------------------------------------*/
+/* Rotations - settings */
+/*------------------------------------------------------------------------------------*/
 
 @keyframes rotate {
   0% { transform:rotate(0deg); }

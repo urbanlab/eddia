@@ -1,0 +1,16 @@
+Nouvelle fenêtre ouverte dans la session du navigateur
+[6031:6071:0718/114036.582125:ERROR:cert_verify_proc_nss.cc(980)] CERT_PKIXVerifyCert for 192.168.71.127 failed err=-8179
+[6712:6712:0718/114351.546010:ERROR:in_progress_cache_impl.cc(188)] Cache is not initialized, cannot RetrieveEntry.
+[6712:6712:0718/114351.546051:ERROR:in_progress_cache_impl.cc(188)] Cache is not initialized, cannot RetrieveEntry.
+[6712:6712:0718/114351.546069:ERROR:in_progress_cache_impl.cc(188)] Cache is not initialized, cannot RetrieveEntry.
+[6712:6712:0718/114351.546085:ERROR:in_progress_cache_impl.cc(188)] Cache is not initialized, cannot RetrieveEntry.
+[6712:6712:0718/114351.546101:ERROR:in_progress_cache_impl.cc(188)] Cache is not initialized, cannot RetrieveEntry.
+[6712:6712:0718/114351.546170:ERROR:in_progress_cache_impl.cc(188)] Cache is not initialized, cannot RetrieveEntry.
+[6712:6712:0718/114351.546189:ERROR:in_progress_cache_impl.cc(188)] Cache is not initialized, cannot RetrieveEntry.
+[6712:6712:0718/114351.546211:ERROR:in_progress_cache_impl.cc(188)] Cache is not initialized, cannot RetrieveEntry.
+[6712:6712:0718/114351.546265:ERROR:in_progress_cache_impl.cc(188)] Cache is not initialized, cannot RetrieveEntry.
+[6712:6712:0718/114351.546287:ERROR:in_progress_cache_impl.cc(188)] Cache is not initialized, cannot RetrieveEntry.
+[6712:6751:0718/114351.572184:ERROR:cert_verify_proc_nss.cc(980)] CERT_PKIXVerifyCert for 192.168.71.127 failed err=-8179
+[7197:7237:0718/114738.203919:ERROR:cert_verify_proc_nss.cc(980)] CERT_PKIXVerifyCert for 192.168.71.127 failed err=-8179
+[7631:7669:0718/115311.708729:ERROR:cert_verify_proc_nss.cc(980)] CERT_PKIXVerifyCert for 192.168.71.127 failed err=-8179
+[8022:8060:0718/115428.663585:ERROR:cert_verify_proc_nss.cc(980)] CERT_PKIXVerifyCert for 192.168.71.127 failed err=-8179
