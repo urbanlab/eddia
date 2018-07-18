@@ -21,7 +21,6 @@ Pour l'instant, EddIA permet de réaliser le premier temps de ce processus.
 # Architecture #
 
 ## Architecture générale ##
-
 EddIA se compose de:
 
 - D'un serveur web hébergé par une machine Linux (machine virtuelle tournant sur le réseau de l'UrbanLab).
@@ -31,7 +30,6 @@ EddIA se compose de:
 En termes d'architecture logiciel, il s'agit d'une application Web sous NodeJS, et dont la tablette est le client. La reconnaissance des termes-clés de la conversation se fait grâce à la combinaison de l'API Chrome Web Speech API et d'une base de données de termes-clés prédéfinis.
 
 ## Structure du code ##
-
 Il s'agit d'une application Web classique, fonctionnant sous le framework Express de nodeJS et utilisant la technologie des sockets:
 * Le répertoire principal contient le code du serveur, *app.js*, et le fichier de gestion des modules *package.json*
 * Le répertoire **views** contient le code de la page HTML, *app-html.ejs*
@@ -42,12 +40,11 @@ Il s'agit d'une application Web classique, fonctionnant sous le framework Expres
 # Guide d'utilisation #
 
 ## Démarrage ##
-
 Pour installer l'application **(machine Ubuntu 16.04)** cloner ce répertoire, y ouvrir une console et taper `npm install`.
 
 Pour lancer l'application, il suffit de lancer le serveur puis d'ouvrir Chrome à l'adresse `https://IP_du_serveur:3010` (un exemple de scripts de lancement et d'arrêt automatisés est disponible dans le répertoire **scripts**). Alors:
 
-# Utilisation #
+## Utilisation ##
 La page de l'application Eddia relève et affiche les mots-clés, classés par catégorie appelées "intérêts", sous forme de bulles. De base, seuls les intérêts s'affichent, en appuyant sur un intérêt on affiche les mots qu'il contient et en appuyant sur un mot, on affiche un éventuel contenu associé.
 
 1. Pour choisir un sujet de conversation, toucher le titre de la conversation au centre de la page, puis toucher l'un des sujets de conversation qui apparaissent en bas de la page.
@@ -58,7 +55,7 @@ La page de l'application Eddia relève et affiche les mots-clés, classés par c
 6. Pour recharger la page, toucher son coin en haut à droite.
 7. Pour revenir à une discussion plus tard, relever l'URL de la page. La recharger sus Chrome uniquement.
 
-### Problèmes éventuels ###
+## Problèmes éventuels ##
 * La reconnaissance vocale ne fonctionne plus:
     * Dans sa version actuelle, Eddia utilise l'API Chrome Web Speech, qui a l'avantage de fonctionner localement sur le navigateur mais ne fonctionne que sur Google Chrome et est limitée à des écoutes de 60 secondes. Si cette limite est dépassée, il faut attendre 1 minute ou bien recharger la page.
 * Une bulle reste coincée au bord de la page:
