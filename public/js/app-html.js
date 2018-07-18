@@ -341,11 +341,6 @@ function init_microphone(socket) {
       $('.bubble--word').removeClass('related current no-transition'); // flickr because of no-transition: deletable TODO
       $('.bubble--content').removeClass('related current');
 
-      // $('.bubble--word')
-      //   .css({
-      //     'transform': 'translate('+(screenW/2)+'px, '+(screenH/2)+'px)'
-      //   });
-
       $('.bubble--word').each(function(){
         var interestBubbleParent = $('.bubble--interest[data-name="' + $(this).data('interest') + '"]');
 

@@ -1,7 +1,15 @@
+//--------------------------------------------------------------------------------
+// Import node modules
+//--------------------------------------------------------------------------------
 var express = require('express');
 var app = express();
 var fs = require('fs');
-// Online
+var path = require('path');
+
+//--------------------------------------------------------------------------------
+// Create and configure server
+//--------------------------------------------------------------------------------
+// Create server
 var server = require('https').createServer({
   key: fs.readFileSync('certs/ssl-cert-snakeoil.key'),
   cert: fs.readFileSync('certs/ssl-cert-snakeoil.pem')
@@ -9,66 +17,16 @@ var server = require('https').createServer({
 
 var io = require('socket.io')(server);
 
-var path = require('path');
-var fs = require('fs');
-
-
-//--------------------------------------------------------------------------------
-
-var structs_path = "./datas/struct/";
-var topics_path = "./datas/topics/";
-
-var topics = get_dir_content(topics_path);
-var default_topic = topics[0];
-
-var id_index = 1;
-var valid_id_indexes =  [];
-var rooms = [];
-
-//--------------------------------------------------------------------------------
-
-function get_dir_content(dir_path) {
-	// 
-	return fs.readdirSync(dir_path);
-}
-
-function clear_folder(dir_path) {
-	fs.readdir(dir_path, (err, files) => {
-	  if (err) throw err;
-
-	  for (const file of files) {
-	    fs.unlink(path.join(dir_path, file), err => {
-	      if (err) throw err;
-	    });
-	  };
-	});
-}
-
-function update_id_index(dir_path) {
-	// Gets the 
-	var files = get_dir_content(dir_path);
-	var file_numbers = files.map((filename) => (parseInt(filename.split('.')[0])));
-	if(file_numbers == []) {
-		return 0
-	} else {
-		return Math.max.apply(null, file_numbers) + 1
-	};
-};
-
-
-clear_folder(structs_path);
-
-
-//--------------------------------------------------------------------------------
-
-
-// Config
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+// Enable it to serve static resources (css, js, images and sounds)
 app.use(express.static(path.join(__dirname, 'public')));
 
-//--------------------------------------------------------------------------------
+// Routing system: when a GET request is sent to the server:
+// - if no parameter is specified, use the default topic and create a new room
+// - if a valid topic is specified but no id is given, create a new room associated with that topic
+// - if a valid (topic, id) couple is specified, reload the room associated with that (topic, id) couple
 app.get('/', function(req, res, next) {;
 	res.redirect('/' + default_topic + '/' + String(id_index));
 });
@@ -100,31 +58,87 @@ app.get('/:topic/:id', function(req, res, next) {
 	};
 });
 
+
+//--------------------------------------------------------------------------------
+// Clear cache and initialize path variables
 //--------------------------------------------------------------------------------
 
-// Main
+var structs_path = "./datas/struct/";         // Path of the cache associated with each room ID
+var topics_path = "./datas/topics/";		  // Path of the databases associated with each topic of discussion
 
+var topics = get_dir_content(topics_path);
+var default_topic = topics[0];
 
+clear_folder(structs_path);                   // Clear all caches
+var id_index = 1;                             // When a new room is created, its ID is created using this variable
+var valid_id_indexes =  [];                   // the list of the IDs of the existing rooms
 
+//--------------------------------------------------------------------------------
+// Define utility functions
+//--------------------------------------------------------------------------------
+
+function get_dir_content(dir_path) {
+	// Get the name of all the files of a directory
+	return fs.readdirSync(dir_path);
+}
+
+function clear_folder(dir_path) {
+	// clear all the files of a directory
+	fs.readdir(dir_path, (err, files) => {
+	  if (err) throw err;
+
+	  for (const file of files) {
+	    fs.unlink(path.join(dir_path, file), err => {
+	      if (err) throw err;
+	    });
+	  };
+	});
+}
+
+function update_id_index(dir_path) {
+	// When a room is created, generate a unique ID for it 
+	var files = get_dir_content(dir_path);
+	var file_numbers = files.map((filename) => (parseInt(filename.split('.')[0])));
+	if(file_numbers == []) {
+		return 1
+	} else {
+		return Math.max.apply(null, file_numbers) + 1
+	};
+};
+
+function isEmpty(obj) {
+	// Checks if an Object is empty
+    for(var key in obj) {
+        if(obj.hasOwnProperty(key))
+            return false;
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------
+// Communication with the frontend
+//--------------------------------------------------------------------------------
 io.on('connection', function(socket) {
-	var room_id;
-	var room_topic;
-	var topic_path;
-	var filename;
-	var model_interest_words;
-	var model_contents;
-	var interests_found = {};
-
+	var room_id;							// number that identifies the page and keeps it available when the user disconnects
+	var room_topic;							// topic of the dialogue
+	var topic_path;							// path to the data (interests, words and contents) specific to the room's topic
+	var filename;							// path to the cache of the current room (contains the data of the dialogue)
+	var model_interest_words;               // objects that contains the words Eddia is listening for, classified by interest
+	var model_contents;						// object that contains the contents associated with each (interest, word) couple
 
 	socket.on('room', function(client) {
+		// When a room is created, it sends data to the server. Use this data to initialize the backend and finalize the creation
+		// of the client room page.
+
+		//-----------------------------Initialization-------------------------------------
 
 		room_id = client.room_id;
 		room_topic = client.topic;
 		topic_path = './datas/topics' + '/' + room_topic + '/';
 		filename = structs_path + room_id + ".json";
 
-		if(!valid_id_indexes.includes(parseInt(room_id))) {
-			write_data(filename, {[room_topic] : {}}); // Define a default scenario as a fallback (via a socket.emit from the manager)
+		if(!valid_id_indexes.includes(parseInt(room_id))) { // if the room for the given URL doesn't exist create a new one
+			write_data(filename, {[room_topic] : {}});      // else load the existing room
 		};
 
 		valid_id_indexes.push(id_index);
@@ -135,26 +149,23 @@ io.on('connection', function(socket) {
 		socket.join(String(room_id));
 		socket.emit('topics', {'topic_list':topics, 'current_topic':room_topic});
 
-
-		socket.on('bubble/interest/add', function(new_interest) {
-			add(null, new_interest);
-		});
-
-		socket.on("bubble/word/add", function(new_word) {
-			add(new_word, null);
-		});
+		//--------------------------Communication with the Frontend------------------------
 
 		socket.on('get_data', function() {
+			// Send the room's data to the client when it requires it
 			socket.emit('get_data', get_data(filename));
 		});
 
 		socket.on('bubble/word/remove', function(bubble) {
+			// When a bubble is removed from the client interface, remove the
+			// (interest, word, contents) tupple from the room's cache
 			var datas =  get_data(filename);
 			remove_word(bubble.interest, bubble.word, datas);
 		})
 
 		socket.on('voice/add_new_word', function(transcription) {
-			// console.log(transcription);
+			// When an instruction is sent to add a new word, process it and add the new
+			// (interest, word) couple to the room's cache
 			var transcription_array = transcription.split(' ');
 			transcription_array = transcription_array.filter((x) => (x != ' '));
 			transcription_array.map((x) => x.toLowerCase());
@@ -174,7 +185,10 @@ io.on('connection', function(socket) {
 		});
 
 		socket.on('transcription/send', function(transcription) {
-			for (interest in model_interest_words) { // For each interest
+			// When the transcription of a dialogue chunk is sent to the the server, search for
+			// interest words into it. If an interest word is found, add it to the cache and order
+			// the client to create the correspoonding bubbles
+			for (interest in model_interest_words) {
 				for(const word of model_interest_words[interest]) {
 					if(transcription.indexOf(word) != -1) {
 						add(word, interest);
@@ -182,31 +196,32 @@ io.on('connection', function(socket) {
 				}
 			}
 		});
-});
+	});
         
-        function update_data(socket, filename) {
-        	var data = get_data(filename);
-        	if (data)
-        		socket.emit("update data", data);
-        }
-        
-        function get_data(filename) {
-			try {
-	        		return JSON.parse(fs.readFileSync(filename, "utf8"));
-			} catch (err) {
-				return null;
-			}
-        }
-        
-        function write_data(filename, datas) {
-        	fs.writeFileSync(filename, JSON.stringify(datas));
-        }
+    //-------------------Calculation functions used by the backend-----------------------
+    // Notes: - |adding a word contained into several interests => add all interests
+    //        - |removing                                       => remove the specified interest only
+    //        - a word can appear in several interests, but a content is bound to only one (interest, word) couple
 
-
-	//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    function get_data(filename) {
+    	// Get the data contained in the file of path filename
+		try {
+        		return JSON.parse(fs.readFileSync(filename, "utf8"));
+		} catch (err) {
+			return null;
+		}
+    }
+    
+    function write_data(filename, datas) {
+    	// Create the file of path filename and put datas in it.
+    	// If it already exists, replace its content with datas.
+    	fs.writeFileSync(filename, JSON.stringify(datas));
+    }
 
 
 	function search_in_model_contents(interest, word) {
+		// Returns the contents associated with an (interest, word) couple
+		// in topic_path/contents.json
 		var word_contents = model_contents[word];
 		if(word_contents == undefined) {
 			return [];
@@ -216,6 +231,8 @@ io.on('connection', function(socket) {
 	}
 
 	function search_in_model_words(word) {
+		// Returns the different interests associated with the same word
+		// in topic_path/words.json
 		var related_interests = [];
 		for(interest in model_interest_words) {
 			if (model_interest_words[interest].includes(word)) {
@@ -226,6 +243,8 @@ io.on('connection', function(socket) {
 	}
 
 	function add_interest(new_interest, datas) {
+		// Add a new interest to the room's cache (copied in the data variable).
+		// Tells the client side to add a corresponding bubble.
 		if(new_interest == null) {return};
 		if(datas[room_topic][new_interest] == undefined) {
 			datas[room_topic][new_interest] = {};
@@ -234,6 +253,8 @@ io.on('connection', function(socket) {
 	}
 
 	function add_word(interest, new_word, datas) {
+		// Add a new word and the associated contents to the room's cache (copied in the data variable).
+		// Tells the client side to add a corresponding bubble.
 		if(interest == null || new_word == null) {return};
 
 		if(datas[room_topic][interest][new_word] == undefined) {
@@ -244,7 +265,9 @@ io.on('connection', function(socket) {
 		};
 	}
 
-	function add_content(interest, word, new_content, datas) { // Spécial, appelé lors de la création d'un mot (on ne peut pas créer de content depuis l'interface)
+	function add_content(interest, word, new_content, datas) {
+		// Add a new content to the room's cache.
+		// Tells the client side to add a corresponding bubble.
 		if(interest == null || word == null || new_content == null) {return};
 		if(!datas[room_topic][interest][word].includes(new_content)) {
 			datas[room_topic][interest][word].push(new_content);
@@ -253,6 +276,9 @@ io.on('connection', function(socket) {
 	}
 
 	function add(word=null, interest=null) {
+		// Handles the adding of new interests/words/contents when they appear in a transcription
+		// or they are manually added to the room. Add those to the room's cache and tells the client
+		// side to create the corresponding bubbles.
 		var datas = get_data(filename);
 		if (datas == null || datas == undefined) {
 			console.log("Error, socket.on('add_bubble')");
@@ -269,6 +295,8 @@ io.on('connection', function(socket) {
 	}
 
 	function remove_word(interest, word, datas) {
+		// Remove a word and its contents from the cache. If the associated iterest
+		// becomes empty, remove it as well.
 		if (datas == null || datas == undefined) {
 			console.log("Error, socket.on('remove_bubble')");
 			return;
@@ -284,17 +312,8 @@ io.on('connection', function(socket) {
 		}
 		write_data(filename, datas);
 	}
-	//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 });
 
+// Start listening port 3010
 server.listen(3010);
-
-
-function isEmpty(obj) {
-    for(var key in obj) {
-        if(obj.hasOwnProperty(key))
-            return false;
-    }
-    return true;
-}
