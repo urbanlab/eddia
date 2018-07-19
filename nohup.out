@@ -14,3 +14,21 @@ Nouvelle fenêtre ouverte dans la session du navigateur
 [7197:7237:0718/114738.203919:ERROR:cert_verify_proc_nss.cc(980)] CERT_PKIXVerifyCert for 192.168.71.127 failed err=-8179
 [7631:7669:0718/115311.708729:ERROR:cert_verify_proc_nss.cc(980)] CERT_PKIXVerifyCert for 192.168.71.127 failed err=-8179
 [8022:8060:0718/115428.663585:ERROR:cert_verify_proc_nss.cc(980)] CERT_PKIXVerifyCert for 192.168.71.127 failed err=-8179
+[11289:11289:0718/172457.221726:ERROR:in_progress_cache_impl.cc(188)] Cache is not initialized, cannot RetrieveEntry.
+[11289:11289:0718/172457.221903:ERROR:in_progress_cache_impl.cc(188)] Cache is not initialized, cannot RetrieveEntry.
+[11289:11289:0718/172457.221945:ERROR:in_progress_cache_impl.cc(188)] Cache is not initialized, cannot RetrieveEntry.
+[11289:11289:0718/172457.221977:ERROR:in_progress_cache_impl.cc(188)] Cache is not initialized, cannot RetrieveEntry.
+[11289:11289:0718/172457.222004:ERROR:in_progress_cache_impl.cc(188)] Cache is not initialized, cannot RetrieveEntry.
+[11289:11289:0718/172457.222032:ERROR:in_progress_cache_impl.cc(188)] Cache is not initialized, cannot RetrieveEntry.
+[11289:11289:0718/172457.222060:ERROR:in_progress_cache_impl.cc(188)] Cache is not initialized, cannot RetrieveEntry.
+[11289:11289:0718/172457.227404:ERROR:in_progress_cache_impl.cc(188)] Cache is not initialized, cannot RetrieveEntry.
+[11289:11289:0718/172457.227440:ERROR:in_progress_cache_impl.cc(188)] Cache is not initialized, cannot RetrieveEntry.
+[11289:11289:0718/172457.227455:ERROR:in_progress_cache_impl.cc(188)] Cache is not initialized, cannot RetrieveEntry.
+[11289:11436:0718/172457.259328:ERROR:cert_verify_proc_nss.cc(980)] CERT_PKIXVerifyCert for 192.168.71.127 failed err=-8179
+[15473:15514:0719/135717.512173:ERROR:cert_verify_proc_nss.cc(980)] CERT_PKIXVerifyCert for 192.168.71.127 failed err=-8179
+Nouvelle fenêtre ouverte dans la session du navigateur
+[16214:16254:0719/141247.047339:ERROR:cert_verify_proc_nss.cc(980)] CERT_PKIXVerifyCert for 192.168.71.127 failed err=-8179
+[17270:17414:0719/153246.426562:ERROR:cert_verify_proc_nss.cc(980)] CERT_PKIXVerifyCert for 192.168.71.127 failed err=-8179
+Nouvelle fenêtre ouverte dans la session du navigateur
+Nouvelle fenêtre ouverte dans la session du navigateur
+[17270:17270:0719/154244.072696:ERROR:media_internals.cc(103)] Cannot get RenderProcessHost

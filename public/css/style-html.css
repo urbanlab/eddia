@@ -665,7 +665,7 @@
 }
 
 .bubble--content.current .bubble-scale {
-  transform:scale(8) !important;
+  transform:scale(5) !important;
 }
 
 .bubble--content.current .bubble-thumbnail-label {
