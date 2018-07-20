@@ -1,3 +1,7 @@
-/node_modules
-/nohup.out
-/app_log.log
+node_modules/
+
+datas/topics/*.save.json
+nohup.out
+app_log.log
+package.lock.json
+
