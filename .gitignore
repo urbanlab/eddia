@@ -1,4 +1,5 @@
 node_modules/
+datas/struct/*.json
 nohup.out
 app_log.log
 package-lock.json
