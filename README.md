@@ -35,7 +35,7 @@ Il s'agit d'une application Web classique, fonctionnant sous le framework Expres
 * Le répertoire **views** contient le code de la page HTML, *app-html.ejs*
 * Le répertoire **public** comporte les ressources statiques utilisées par la page côté client (images, sons, polices de caractères), sa feuille de style (*public/css/style-hlml.css*), son code Javascript (*public/js/app-html.js*) et les librairies  Javascript qu'elle utilise (le reste du contenu de *public/js*).
 * Le répertoire **certs** contient les certificats SSH (invalides) utilisés pour faire fonctionner l'application de https (nécessaire pour utiliser Chrome WebSpeech API).
-* Le répertoire **datas** comporte les bases de données de  mots utilisées par l'application. *datas/structs* comporte les données de chaque salon de discussion ouvert (chaque conversation en crée un, auquel on peut revenir en entrant l'URL `https://IP_du_serveur:3010/sujet_de_discussion/numéro_du_salon`. *datas/topics* contient les données associés à chaque sujet de discussion (créer un sous-répertoire <=> créer un nouveau sujet de discussion, mettre le titre en majuscules) dans les fichiers *datas/topics/TOPIC/words.json* (liste des mots à reconnaitre, classés par intérêt) et *datas/topics/TOPIC/words.json* (liste des contenus associés aux différents couples (intérêt, mot)).
+* Le répertoire **datas** comporte les bases de données de  mots utilisées par l'application. *datas/structs* comporte les données de chaque salon de discussion ouvert (chaque conversation en crée un, auquel on peut revenir en entrant l'URL `https://IP_du_serveur:3010/sujet_de_discussion/numéro_du_salon`. *datas/topics* contient les données associés à chaque sujet de discussion (créer un sous-répertoire <=> créer un nouveau sujet de discussion, mettre le titre en majuscules) dans les fichiers *datas/topics/TOPIC/words.json* (liste des mots à reconnaitre, classés par intérêt) et *datas/topics/TOPIC/words.json* (liste des contenus associés aux différents couples (intérêt, mot)). Lorsque des mots sont ajoutés à EDDIA via la commande vocale, ils sont enregistrés dans une nouvelle version de *words.json* nommée *words__dateEnregistrement.save.json* et seule la dernière version du corpus est utilisée.
 
 # Guide d'utilisation #
 
@@ -53,16 +53,14 @@ La page de l'application Eddia relève et affiche les mots-clés, classés par c
 4. Pour supprimer un mot, le faire glisser au niveau d'un coin de la page jusqu'à qu'un liseré rouge apparaisse puis le déposer.
 5. Pour faire tourner la page, toucher l'un de ses bords.
 6. Pour recharger la page, toucher son coin en haut à droite.
-7. Pour revenir à une discussion plus tard, relever l'URL de la page. La recharger sus Chrome uniquement.
+7. Pour revenir à une discussion plus tard, relever l'URL de la page. La recharger sur Chrome uniquement.
+
+L'administrateur d'Eddia peut modifier le contenu du corpus associé à un sujet de discussion en éditant à la main les fichiers de datas/topics/NOMDUCORPUS. Notamment il peut revenir à une sauvegarde du corpus en effaçant les suivantes, ou ajouter des mots/des contenus à la main.
 
 ## Problèmes éventuels ##
 * La reconnaissance vocale ne fonctionne plus:
     * Dans sa version actuelle, Eddia utilise l'API Chrome Web Speech, qui a l'avantage de fonctionner localement sur le navigateur mais ne fonctionne que sur Google Chrome et est limitée à des écoutes de 60 secondes. Si cette limite est dépassée, il faut attendre 1 minute ou bien recharger la page.
-* Une bulle reste coincée au bord de la page:
-    * Recharger la page
 
 # Modifications à apporter #
 
 * Migrer vers une autre API de reconnaissance vocale, la solution mise en oeuvre actuellement ne convenant pas à l'utilisation d'Eddia.
-* Documenter, réorganiser et "nettoyer" le code.
-* Supprimer le bug qui rend une bulle au bord de la page non-interactive.
