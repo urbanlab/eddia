@@ -1,7 +1,5 @@
 node_modules/
-
-datas/topics/*.save.json
 nohup.out
 app_log.log
-package.lock.json
-
+package-lock.json
+**.save.json
