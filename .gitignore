@@ -1,4 +1,4 @@
 /node_modules
-/datas/struct/*.json
+/datas/struct
 /nohup.out
 /app_log.log
