@@ -1,2 +1,4 @@
-./node_modules
-./datas/struct/*.json
+/node_modules
+/datas/struct/*.json
+/nohup.out
+/app_log.log

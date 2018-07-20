@@ -161,7 +161,6 @@ function init_microphone(socket) {
     			console.log('transcription:', transcription);
     			socket.emit('transcription/send', transcription);
     			transcription = '';
-          recognition.stop();
         };
       };
 		}
@@ -230,6 +229,18 @@ function init_microphone(socket) {
     $('.screen').append(toggleListeningLogo);
 
 
+    // Display the page's topic and the saved data if it exists
+    createBubble({"type":"topic", 'topic':current_topic});
+    for(interest in datas[current_topic]) {
+      createBubble({"type":"interest", "topic":current_topic, "interest": interest});
+      for(word in datas[current_topic][interest]) {
+        createBubble({"type":"word", "topic":current_topic, "interest": interest, "word": word});
+        for(const content of datas[current_topic][interest][word]) {
+          createBubble({"type":"content", "topic":current_topic, "interest":interest, "word": word,"content":content});
+        };
+      };
+    };
+
     // Create the 'choose another conversation topic' table. Set its behaviour.
     for(var i=0; i < topics.length; i++) {
       if(topics[i] != current_topic) {
@@ -260,18 +271,6 @@ function init_microphone(socket) {
 
       };
     });
-
-    // Display the page's topic and the saved data if it exists
-    createBubble({"type":"topic", 'topic':current_topic});
-    for(interest in datas[current_topic]) {
-      createBubble({"type":"interest", "topic":current_topic, "interest": interest});
-      for(word in datas[current_topic][interest]) {
-        createBubble({"type":"word", "topic":current_topic, "interest": interest, "word": word});
-        for(const content of datas[current_topic][interest][word]) {
-          createBubble({"type":"content", "topic":current_topic, "interest":interest, "word": word,"content":content});
-        };
-      };
-    };
 
     // Set the Views system (you can view the interests('topic'), the words belonging
     // to a certain interest('interest') or the contents belonging to a certain word('word'))
@@ -591,10 +590,10 @@ function init_microphone(socket) {
       .attr('data-type', d.type)
       .attr('data-word', d.word)
       .attr('data-interest', d.interest)
-      .data('scale', 1)
+      .data('scale', 1);
 
 
-      .on('click', function(){
+      DOM_bubble.on('click', function(){
         // Behaviour of the bubble when clicked on: enlarge it and display its content
         if (d.type == 'topic') {
           setView('topic');
@@ -711,10 +710,15 @@ function init_microphone(socket) {
           var currentDeltaY = $(target).data('y') + (event.gesture.deltaY);
 
           // Remove zone case
-          if ((currentDeltaX <= removeZoneSize && currentDeltaY <= removeZoneSize) // top left
-           || (currentDeltaX <= removeZoneSize && currentDeltaY >= screenH - removeZoneSize) // bottom left
-           || (currentDeltaX >= screenW - removeZoneSize && currentDeltaY <= removeZoneSize) // top right
-           || (currentDeltaX >= screenW - removeZoneSize && currentDeltaY >= screenH - removeZoneSize)) { // bottom right
+          if ((currentDeltaX <= removeZoneSize && currentDeltaY <= removeZoneSize)                      // top left
+           || (currentDeltaX <= removeZoneSize && currentDeltaY >= screenH - removeZoneSize)            // bottom left
+           || (currentDeltaX >= screenW - removeZoneSize && currentDeltaY <= removeZoneSize)            // top right
+           || (currentDeltaX >= screenW - removeZoneSize && currentDeltaY >= screenH - removeZoneSize)  // bottom right
+           || (currentDeltaX <= removeZoneSize * (4 / 10))                                              // left
+           || (currentDeltaX >= screenW - removeZoneSize * (4 / 10))                                    // right
+           || (currentDeltaY <= removeZoneSize * (4 / 10))                                              // top
+           || (currentDeltaY >= screenH - removeZoneSize * (4 / 10))) {                                 // bottom
+
             $(target).addClass('deletable');
             DOM_screen.addClass('show-delete-ui');
           } else {
@@ -754,15 +758,21 @@ function init_microphone(socket) {
 
           DOM_screen.removeClass('show-delete-ui'); // Stop displaying the remove zones if they are visible
 
-          if (($(target).data('lastx') <= removeZoneSize && $(target).data('lasty') <= removeZoneSize) // top left
-           || ($(target).data('lastx') <= removeZoneSize && $(target).data('lasty') >= screenH - removeZoneSize) // bottom left
-           || ($(target).data('lastx') >= screenW - removeZoneSize && $(target).data('lasty') <= removeZoneSize) // top right
-           || ($(target).data('lastx') >= screenW - removeZoneSize && $(target).data('lasty') >= screenH - removeZoneSize)) { // bottom right
+          if (($(target).data('lastx') <= removeZoneSize && $(target).data('lasty') <= removeZoneSize)                          // top left
+           || ($(target).data('lastx') <= removeZoneSize && $(target).data('lasty') >= screenH - removeZoneSize)                // bottom left
+           || ($(target).data('lastx') >= screenW - removeZoneSize && $(target).data('lasty') <= removeZoneSize)                // top right
+           || ($(target).data('lastx') >= screenW - removeZoneSize && $(target).data('lasty') >= screenH - removeZoneSize)      // bottom right
+           || ($(target).data('lastx') <= removeZoneSize * (4 / 10))                                                            // left
+           || ($(target).data('lastx') >= screenW - removeZoneSize * (4 / 10))                                                  // right
+           || ($(target).data('lasty') <= removeZoneSize * (4 / 10))                                                            // top
+           || ($(target).data('lasty') >= screenH - removeZoneSize * (4 / 10))) {                                               // bottom
+
             removeBubble($(target)); // if the bubble is dropped into the remove zone, remove it and skip the following instructions
             return;
           }
 
           // Put the bubble's new coordinates and rotation into its long-term position variables
+
 
           // Avoid pinchend flickering (because of these two fingers crashing the final position)
           if (event.type != "pinchend") {
