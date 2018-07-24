@@ -237,13 +237,15 @@ io.on('connection', function(socket) {
 				var interest = transcription_array.slice(index_interest + 1, index_word).join(' ').trim(),
 					word = transcription_array.slice(index_word + 1).join(' ').trim();
 
-				add(word, interest);
-				if(model_interest_words[interest] == undefined) {
-					model_interest_words[interest] = [word];
-					database_modified = true;
-				} else if(!model_interest_words[interest].includes(word)) {
-					model_interest_words[interest].push(word);
-					database_modified = true;
+				if(word.search(/[a-zA-Z1-9]/) != -1) { // if word isn't empty
+					add(word, interest);
+					if(model_interest_words[interest] == undefined) {
+						model_interest_words[interest] = [word];
+						database_modified = true;
+					} else if(!model_interest_words[interest].includes(word)) {
+						model_interest_words[interest].push(word);
+						database_modified = true;
+					};
 				};
 			}
 		});
