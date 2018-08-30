@@ -161,6 +161,7 @@ function init_microphone(socket) {
     			console.log('transcription:', transcription);
     			socket.emit('transcription/send', transcription);
     			transcription = '';
+          recognition.stop();
         };
       };
 		}
