@@ -60,7 +60,32 @@ L'administrateur d'Eddia peut modifier le contenu du corpus associé à un sujet
 ## Problèmes éventuels ##
 * La reconnaissance vocale ne fonctionne plus:
     * Dans sa version actuelle, Eddia utilise l'API Chrome Web Speech, qui a l'avantage de fonctionner localement sur le navigateur mais ne fonctionne que sur Google Chrome et est limitée à des écoutes de 60 secondes. Si cette limite est dépassée, il faut attendre 1 minute ou bien recharger la page.
+    
+## Modification de l'application
+
+
+### Gestion des corpus et des sujets de discussion ###
+Il faut pour cela aller dans le dossier `datas/topics`, et modifier les fichiers qui s'y trouvent sachant que:
+
+- Chaque dossier correspond à un sujet de discussion. Son titre est le nom du sujet de discussion et doit être écrit en majuscules.
+- Au sein d'un dossier/sujet de discussion:
+   * Le fichier **words.json** contient l'ensemble des mots recherchés par eddia lors de l'écoute de la conversation, classés par intérêt. Un mot peut apparaître dans plusieurs intérêts. Voir `datas/topics/DEMO/words.json` pour un exemple).
+   * Le fichier **contents.json** contient les ressources associées à chaque mot. A chaque mot est associée une liste de contenus, et chaque contenu est associé à un intérêt (de cette manière, chaque contenu est associé à un couple (intérêt, mot)). Voir `datas/topics/DEMO/contents.json` pour un exemple.
+* A chaque session d'utilisation, des mots peuvent être ajoutés au corpus d'un sujet de discussion. La nouvelle version du corpus est alors enregistrée dans un fichier `date_et_heure_session.save.json`. La version qui est utilisée au cours des discussions est toujours la plus récente en date.
+
+### Modification du code 
+Pour implémenter des modifications du code de la démo, il faut procéder de la manière suivante:
+
+1. Cloner le répertoire Github du projet sur un ordinateur Linux, en local.
+2. Implémenter et tester les modifications en faisant communiquer l'ordinateur Linux et la table tactile via le réseau Wifi `erasme-agents`.
+3. Commiter et pousser les modifications sur le répertoire Github en ligne (`git add .`, `git commit -am "Message"`, `git push origin master` 
+4. Se connecter en SSH avec le compte eddia de lab.erasme.lan: suivre la procédure pour créer une connection SSH avec cette machine, puis entrer `ssh eddia@lab.erasme.lan`
+5. Arrêter eddia sur ce serveur (`killall node`), rapatrier les modifications effectuées (`cd eddia`, `git checkout.`, `git pull`) et relancer le serveur (`node app.js > app_log.log &`). Fermer la connection ssh (`close`).
+
+**Note:** si de nouveaux node_modules ont été installés, il faut les charger sur la machine lab.erasme.lan en y entrant, dans le dossier eddia: `npm install`
 
 # Modifications à apporter #
 
 * Migrer vers une autre API de reconnaissance vocale, la solution mise en oeuvre actuellement ne convenant pas à l'utilisation d'Eddia.
+
+
